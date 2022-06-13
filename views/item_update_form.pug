@@ -1,0 +1,47 @@
+extends layout
+
+block content
+
+  .form-div
+     span
+        h2= name
+
+     div
+         form(action="/items", method="POST")
+            ul.form-style-1
+               li
+                  label(for="name") Item Name
+                  input#readonly(type="text", name="name" value=`${item.name}`, readonly)
+               li 
+                 label(for="itemClass") Select Class 
+                 select#itemClass(type="text", name="itemClass", class="field-select", disabled=true)
+                     each itemClass in itemClasses 
+                        option(value=itemClass, selected=itemClass == item.class) #{itemClass}
+               li         
+                 label(for="itemType") Select Type 
+                 select#itemType(type="text", name="itemType", class="field-select", disabled=true)
+                     each itemType in itemTypes 
+                        option(value=itemType, selected=itemType == item.type) #{itemType}
+               li
+                  label(for="category") Select Category
+                  select#category(type="text", name="category")
+                      each category in categories
+                          option(value=category[0], selected=category[0] == item.category) #{category[1]}
+               li
+                  label(for="unit") Select Item Unit
+                  select#unit(type="text", name="unit")
+                      each unit in units
+                          option(value=unit[0] selected=unit[0] == item.unit) #{unit[1]}
+               li
+                  label(for="qty") Enter Item Qty
+                  input#qty(type="number", name="qty", value=item.qty )
+                  input#id(type="number", hidden="true", name="id" value=item.id)
+               li
+                  span
+                     button(type="submit") Submit
+                     button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
+
+            .error 
+                 each message in messages
+                    p  #{message}
+      

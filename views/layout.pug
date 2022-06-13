@@ -1,0 +1,17 @@
+doctype html
+html
+  head
+    title= "The Mission Warehouse"
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body(onload="onLoad()")
+    div(class='container')
+       img(src='/images/TMC.png' alt="The Mission Logo" width='200px' height='200px')
+       p
+          h1= "Warehouse Inventory"
+       
+    nav
+       button(onclick="window.location.href='./items'") Items
+       button(onclick="window.location.href='./categories'") Categories
+       button(onclick="window.location.href='./units'") Units
+     
+    block content

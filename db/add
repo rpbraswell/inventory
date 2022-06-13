@@ -1,0 +1,6 @@
+   static addItem(_item, resultHandler ) {
+        console.log(JSON.stringify(_item));
+        let item = new Item(_item);
+        item.insert(undefined, resultHandler);
+   }
+

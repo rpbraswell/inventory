@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  div
+     table
+        thead
+           th
+              h2= name
+           th
+              a(href="/units/add") Add Unit
+        tbody
+
+  div
+      table
+         thead
+             tr
+                th Unit
+         tbody 
+            each row in rows
+              tr
+                td #{row[1]}
+

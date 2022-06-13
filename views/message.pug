@@ -1,0 +1,11 @@
+extends layout
+
+block content
+
+  div
+     p #{message}
+
+  script(type="text/javascript").
+      function onLoad() {
+         setTimeout( () => {window.location.href="http://#{hostname}:8080/items"}, 2000)
+      }

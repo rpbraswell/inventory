@@ -1,0 +1,20 @@
+extends layout
+
+block content
+
+   .form-div
+
+      h2= name
+
+      div
+         form(action="/categories", method="POST")
+           ul(class="form-style-1")
+              li
+                 label(for="category") Category Name
+                    span(class="required") *
+                 input#category(type="text", name="category", placeholder="required")
+              li
+                 span
+                    button(type="submit") Submit
+                    button(type="button" onclick="history.back()") Cancel
+

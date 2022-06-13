@@ -1,0 +1,21 @@
+extends layout
+
+block content
+
+  h1= name
+
+     body
+
+         .form
+             h2 Shipping Form
+             form(action="/ship", method="POST")
+                 label(for="item") Select Item Name
+                 select#item(type="text", name="item")
+                      each itemName in itemNames
+                          option=itemName
+                 label(for="qty") Enter Qty to Ship 
+                 input#qty(type="number", name="qty")
+                 button(type="submit") Submit
+
+
+      
