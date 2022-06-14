@@ -20,4 +20,15 @@ router.post('/', (req, res, next) => {
     });
 });
 
+router.get('/report', (req, res, next) => {
+     try {
+        Receiving.intervalReceived(30, (result) => {
+          console.log(JSON.stringify(result));
+          res.render('received_report', {rows: result})
+     }); 
+     } catch(err) {
+        console.log(err);
+     }
+});
+
 module.exports = router;

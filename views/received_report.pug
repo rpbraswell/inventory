@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  div
+     p Receiving Report
+
+  div
+      table
+         thead
+             tr
+                th Name
+                th Class 
+                th Type
+                th Received
+                th On Hand
+         tbody 
+            each row in rows
+              tr
+                td #{row.Name}
+                td #{row.Class}
+                td #{row.Type}
+                td #{row.Received}
+                td #{row["On Hand"]}
+ 

@@ -131,6 +131,26 @@ class Receiving {
           });
    }
 
+   /*
+    *  Get the sum of the receiving records for the last days grouped by item
+    *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
+    */
+   static intervalReceived( days = 30, resultHandler ) {
+       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(r.qty) as 'Received', i.qty as 'On Hand' from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) group by r.itemId`;
+       pool.getConnection()
+       .then( conn => { 
+          conn.query(sql)
+          .then( (res) => {
+               resultHandler(res);
+          })
+          .catch( (err) => {
+               throw err;
+          })
+        })
+       .catch( (err) => {
+        resultHandler(err);
+       });
+   }
 }
 
 module.exports = Receiving;

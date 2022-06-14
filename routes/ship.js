@@ -20,4 +20,14 @@ router.post('/', (req, res, next) => {
     });
 });
 
+router.get('/report', (req, res, next) => {
+     try {
+        Shipping.intervalShipped(30, (result) => {
+          console.log(JSON.stringify(result));
+          res.render('shipping_report', {rows: result})
+     }); 
+     } catch(err) {
+        console.log(err);
+     }
+});
 module.exports = router;

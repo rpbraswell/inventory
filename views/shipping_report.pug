@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  div
+     p Shipping Report
+
+  div
+      table
+         thead
+             tr
+                th Name
+                th Class 
+                th Type
+                th Shipped
+                th On Hand
+         tbody 
+            each row in rows
+              tr
+                td #{row.Name}
+                td #{row.Class}
+                td #{row.Type}
+                td #{row.Shipped}
+                td #{row["On Hand"]}
+ 
