@@ -136,7 +136,7 @@ class Receiving {
     *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
     */
    static intervalReceived( days = 30, resultHandler ) {
-       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(r.qty) as 'Received', i.qty as 'On Hand' from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) group by r.itemId`;
+       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(r.qty) as 'Received', i.qty as 'On Hand' from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) group by r.itemId order by i.name,i.itemClass,i.itemType`;
        pool.getConnection()
        .then( conn => { 
           conn.query(sql)
