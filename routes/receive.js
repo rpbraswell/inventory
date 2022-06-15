@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Receiving = require('../db/Receiving');
+var url  = require('url');
 
 router.post('/', (req, res, next) => {
     console.log(`received: ` + JSON.stringify(req.body));
@@ -21,10 +22,12 @@ router.post('/', (req, res, next) => {
 });
 
 router.get('/report', (req, res, next) => {
+     let query = url.parse(req.url).query;
+     const [interval, days] = query.split("=");
      try {
-        Receiving.intervalReceived(30, (result) => {
+        Receiving.intervalReceived(days, (result) => {
           console.log(JSON.stringify(result));
-          res.render('received_report', {rows: result})
+          res.render('receiving_report', {days: days, rows: result})
      }); 
      } catch(err) {
         console.log(err);

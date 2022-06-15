@@ -1,14 +1,10 @@
 extends layout
 
 block content
-  div
-     table
-        thead
-           th
-              h2= name
-           th
-              a(href="/categories/add") Add Category
-        tbody
+
+  .report-heading
+     span Categories: 
+     a(href="/categories/add") Add Category
 
   div
       table

@@ -2,12 +2,11 @@ var express = require('express');
 var router = express.Router();
 var Unit = require('../db/Unit');
 
-
 /* GET categories listing. */
 router.get('/', function(req, res, next) {
    Unit.getUnits( (rows) => {
        console.log(JSON.stringify(rows));
-       res.render('units', {name: "Units", rows: rows});
+       res.render('units', {rows: rows});
    });
 });
 

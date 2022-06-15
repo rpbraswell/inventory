@@ -2,10 +2,16 @@ extends layout
 
 block content
 
-  div
-     p Shipping Report
+  .report-heading
+     span Shipping Report: 
+     span 
+        form(class="form-horizontal" action="/ship/report", method="get") 
+           label(for="interval") Last 
+           input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
+           label Days
+           input(type="submit" value="Refresh")
 
-  div
+  .div-table
       table
          thead
              tr

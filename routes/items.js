@@ -10,7 +10,7 @@ var Unit = require('../db/Unit');
 router.get('/', function(req, res, next) {
    Item.getItems( (rows) => {
        // console.log(JSON.stringify(rows));
-       res.render('items', { name: "Items", rows: rows});
+       res.render('items', {rows: rows});
    });
 });
 

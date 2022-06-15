@@ -6,14 +6,16 @@ html
   body(onload="onLoad()")
     div(class='container')
        img(src='/images/TMC.png' alt="The Mission Logo" width='200px' height='200px')
-       p
-          h1= "Warehouse Inventory"
-       
-    nav
-       button(onclick="window.location.href='/items'") Items
-       button(onclick="window.location.href='/categories'") Categories
-       button(onclick="window.location.href='/units'") Units
-       button(onclick="window.location.href='/receive/report'") Receiving Report
-       button(onclick="window.location.href='/ship/report'") Shipping Report
+
+       div 
+          p
+             h1= "Warehouse Inventory"
+
+          nav(style='padding-top: 90px; margin-left: 10px;')
+             button(onclick="window.location.href='/items'") Items
+             button(onclick="window.location.href='/categories'") Categories
+             button(onclick="window.location.href='/units'") Units
+             button(onclick="window.location.href='/receive/report?interval=30'") Receiving Report
+             button(onclick="window.location.href='/ship/report?interval=30'") Shipping Report
      
     block content

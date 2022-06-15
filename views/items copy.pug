@@ -2,10 +2,18 @@ extends layout
 
 block content
 
-  .report-heading
-     span Items: 
-     a(href="/items/add") Add Item
+  div
+     p= message
 
+  div 
+     table
+        thead
+           tr 
+              th 
+                 h2= name
+              th                 
+                 a(href="/items/add") Add Item
+        tbody
   div
       table
          thead

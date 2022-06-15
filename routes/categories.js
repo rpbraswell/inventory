@@ -6,7 +6,7 @@ var Category = require('../db/Category');
 /* GET categories listing. */
 router.get('/', function(req, res, next) {
    Category.getCategories( (rows) => {
-       res.render('categories', {name: "Categories", rows: rows});
+       res.render('categories', {rows: rows});
    });
 });
 

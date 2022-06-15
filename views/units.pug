@@ -2,14 +2,9 @@ extends layout
 
 block content
 
-  div
-     table
-        thead
-           th
-              h2= name
-           th
-              a(href="/units/add") Add Unit
-        tbody
+  .report-heading
+     span Units:
+     a(href="/units/add") Add Unit
 
   div
       table
