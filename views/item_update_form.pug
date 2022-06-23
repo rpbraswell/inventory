@@ -2,26 +2,28 @@ extends layout
 
 block content
 
-  .form-div
-     span
-        h2= name
+  div.form-div
+     
+     h2= name
 
-     div
-         form(action="/items", method="POST")
-            ul.form-style-1
+     form(action="/items", method="POST", style="form-style")
+
+            ul.form-style
                li
                   label(for="name") Item Name
-                  input#readonly(type="text", name="name" value=`${item.name}`, readonly)
+                  input#readonly(type="text", name="name", value=`${item.name}`, readonly)
                li 
                  label(for="itemClass") Select Class 
-                 select#itemClass(type="text", name="itemClass", class="field-select", disabled=true)
+                 select#itemClass(type="text", name="itemClass-select", class="field-select", disabled)
                      each itemClass in itemClasses 
-                        option(value=itemClass, selected=itemClass == item.class) #{itemClass}
+                        option(value=itemClass, selected=itemClass == item.itemClass) #{itemClass}
+                 input(type="hidden" name="itemClass" value=item.itemClass) 
                li         
                  label(for="itemType") Select Type 
-                 select#itemType(type="text", name="itemType", class="field-select", disabled=true)
+                 select#itemType(type="text", name="itemType-select", class="field-select", disabled)
                      each itemType in itemTypes 
-                        option(value=itemType, selected=itemType == item.type) #{itemType}
+                        option(value=itemType, selected=itemType == item.itemType) #{itemType}
+                 input(type="hidden" name="itemType" value=item.itemType) 
                li
                   label(for="category") Select Category
                   select#category(type="text", name="category")
@@ -34,12 +36,11 @@ block content
                           option(value=unit[0] selected=unit[0] == item.unit) #{unit[1]}
                li
                   label(for="qty") Enter Item Qty
-                  input#qty(type="number", name="qty", value=item.qty )
+                  input#qty(type="number", name="qty", value=item.qty, autofocus )
                   input#id(type="number", hidden="true", name="id" value=item.id)
-               li
-                  span
-                     button(type="submit") Submit
-                     button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
+               li.button-group
+                  button(type="submit") Submit
+                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
 
             .error 
                  each message in messages

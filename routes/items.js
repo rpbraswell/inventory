@@ -46,7 +46,7 @@ router.get('/update', (req, res, next) => {
                    Item.getTypeValues( (itemTypes) => {
                       Item.getItemById(id,  (item) => {
                          // console.log(JSON.stringify(item));
-                         res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.name}`, itemClasses: itemClasses, itemTypes: itemTypes, item: item, categories: categories, units: units, messages: [] });
+                         res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemClasses: itemClasses, itemTypes: itemTypes, item: item, categories: categories, units: units, messages: [] });
                       });
                    });
                });
@@ -92,7 +92,7 @@ router.post('/', (req, res, next) => {
                       Unit.getUnits( (units) => {
                         Item.getClassValues( (itemClasses) => {
                             Item.getTypeValues( (itemTypes) => {
-                               res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.name}`, itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
+                               res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
                             });
                         });
                       });

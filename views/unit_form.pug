@@ -6,16 +6,14 @@ block content
 
       h2= name
 
-      div
-          form(action="/units", method="POST")
-             ul.form-style-1
-                li
-                   label(for="unit") Enter Unit Name
-                    span(class="required") *
-                   input#unit(type="text", name="unit")
-                li
-                   span
-                      button(type="submit") Submit
-                      button(type="button" onclick="history.back()") Cancel
+      form(action="/units", method="POST")
+            ul.form-style
+               li
+                  label(for="unit") Enter Unit Name
+                     span(class="required") *
+                  input#unit(type="text", name="unit", autofocus)
+               li.button-group
+                  button(type="submit") Submit
+                  button(type="button" onclick="history.back()") Cancel
  
 

@@ -2,49 +2,49 @@ extends layout
 
 block content
 
-  .form-div
-     span
-        h2= name
-     div
-        form(action="/items",  method="POST")
-           ul(class="form-style-1", type="none")
-              li
-                 label(for="name") Item Name
+  div.form-div
+     
+      h2= name
+
+      form(action="/items",  method="POST" style="form-style")
+
+           ul.form-style
+               li
+                  label(for="name") Item Name
                     span(class="required") *
-                 input#name(type="text", name="name", placeholder="required", value=(item.name ? item.name : ""))
-              li 
-                 label(for="itemClass") Select Class 
-                 select#itemClass(type="text", name="itemClass", class="field-select")
+                  input#name(type="text", name="name", placeholder="required", value=(item.name ? item.name : ""), autofocus)
+               li 
+                  label(for="itemClass") Select Class 
+                  select#itemClass(type="text", name="itemClass", class="field-select")
                      option(selected) -select-
                      each itemClass in itemClasses 
                         option(value=itemClass selected=(item.itemClass ? itemClass == item.itemClass : false)) #{itemClass}
-              li         
-                 label(for="itemType") Select Type 
-                 select#itemType(type="text", name="itemType", class="field-select")
+               li         
+                  label(for="itemType") Select Type 
+                  select#itemType(type="text", name="itemType", class="field-select")
                      option(selected) -select-
                      each itemType in itemTypes 
                         option(value=itemType selected=(item.itemType ? itemType == item.itemType: false)) #{itemType}
-              li
-                 label(for="category") Select Category
-                 select#category(type="text", name="category", class="field-select")
+               li
+                  label(for="category") Select Category
+                  select#category(type="text", name="category", class="field-select")
                      option(value=0, selected) -select-
                      each category in categories
                          option(value=category[0] selected=(item.category ? category[0] == item.category : false)) #{category[1]}
-              li
-                 label(for="unit") Select Unit
-                 select#unit(type="text", name="unit", class="field-select")
+               li
+                  label(for="unit") Select Unit
+                  select#unit(type="text", name="unit", class="field-select")
                      option(value=0, selected) -select-
                      each unit in units
                          option(value=unit[0] selected=(item.unit ? unit[0] == item.unit : false) ) #{unit[1]}
-              li
-                 label(for="qty") Qty On Hand
-                 input#qty(type="number", name="qty", value=(item.qty ? item.qty : 0))
-              li
-                 span
-                    button(type="submit") Submit
-                    button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
+               li
+                  label(for="qty") Qty On Hand
+                  input#qty(type="number", name="qty", value=(item.qty ? item.qty : 0))
+               li.button-group
+                  button(type="submit") Submit
+                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
 
-              .error 
-                 each message in messages
-                    p  #{message}
+               .error 
+                  each message in messages
+                     p  #{message}
       

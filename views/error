@@ -1,4 +1,0 @@
-              .error 
-                 each message in messages
-                    p  #{message}
-      

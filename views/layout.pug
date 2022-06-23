@@ -3,15 +3,16 @@ html
   head
     title= "The Mission Warehouse"
     link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    meta(charset="utf-8")
   body(onload="onLoad()")
-    div(class='container')
-       img(src='/images/TMC.png' alt="The Mission Logo" width='200px' height='200px')
+    .layout-container
+       img(src='/images/TMC.png' alt="The Mission Logo")
 
-       div 
-          p
-             h1= "Warehouse Inventory"
+       div
+          h1= "Warehouse Inventory"
 
-          nav(style='padding-top: 90px; margin-left: 10px;')
+          nav
              button(onclick="window.location.href='/items'") Items
              button(onclick="window.location.href='/categories'") Categories
              button(onclick="window.location.href='/units'") Units

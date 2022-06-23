@@ -1,51 +1,42 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  padding: 10px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px Arial, Helvetica, sans-serif;
 }
 
 /*
-div.container {
-   display: grid;
-   width: 100%;
-   grid-template-columns: auto auto auto; 
-   grid-template-rows: auto; 
-   justify-content: start;
-   align-content: center;
-   background-color: #ecd;
-}
-
-div.container img {
-   grid-column-start: 1;
-   grid-column-end: 1;
-   height: 100%;
-   background-color: #ecd;
-}
-
-div.container p {
-   grid-column-start: 2;
-   grid-column-end: 3;
-   height: 100%;
-   background-color: #ecd;
-}
-*/
-div.container {
+ * layout
+ */
+div.layout-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: center;
-  align-content: center;
+  align-items: stretch;
+  align-content: flex-start;
   background-color: #ecd;
   width: 100%; 
   height: 20%;
 }
 
-div.container nav {
-  align-self: flex-end;
+div.layout-container > img {
+  height: auto;
+  width: 10%;
 }
 
-div.div-table {
-   overflow-x: auto;
-   overflow-y: auto;
+div.layout-container > div {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+div.layout-container nav {
+  margin: auto 0 0 10px;
+}
+
+div.layout-container h1 {
+  margin: 10px 0 auto 0;
 }
 
 nav button {
@@ -53,6 +44,9 @@ nav button {
    color: blue;
 }
 
+/*
+ *  reports
+ */
 .report-heading {
     display: flex;
     flex-direction: row;
@@ -75,8 +69,8 @@ table {
 th {
   text-align: left;
   padding-right: 12px; 
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   background-color: #04AA6D;
   color: white;
 }
@@ -89,89 +83,93 @@ td {
   padding-right: 12px; 
 }
 
+tr:hover {
+  background-color: yellow;
+}
+
+
+/*
+ * forms
+ */
+
 .form-div {
    display: flex;
    flex-direction: column;
-   width: 400px;
+   max-width: 400px;
    background-color: #ddd;
    align-items: center;
    justify-content: center;
    border-radius: 1em;
+   margin-top: 5px;
 }
 
-.form-style-1 {
+.form-style {
    margin: 10px auto;
-   max-width: 600px;
-   padding: 20px 12px 10px 20px;
-   font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+   padding: 10px;
 }
 
-.form-style-1 li {
+.form-style ul {
+  list-style-type: none;
+}
+
+.form-style li {
   padding: 0;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  list-style: none;
+  align-items: center;
   justify-content: space-between;
   margin: 10px 0 0 0;
 }
 
-.form-style-1 label {
-  margin: 0 0 3px 0;
-  padding: 0px;
-  display: block;
+.form-style label {
   font-weight: bold;
 }
 
-.form-style-1 .field-select {
-  width: 200px;
+li.button-group {
+  justify-content: flex-end;
 }
 
-
-.form-style-1 button {
-    margin-left: 10px;
+.form-style button:first-child {
+  margin-left: auto;
 }
 
-.form-style-1 input[type=text],
-.form-style-1 input[type=number],
+.form-style button {
+  margin-left: 20px;
+}
+
+.form-style input[type=text],
+.form-style input[type=number],
 select {
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   border: 1px solid #BEBEBE;
   padding: 7px;
   margin: 0px;
-  -webkit-transition: all 0.30s ease-in-out;
-  -moz-transition: all 0.30s ease-in-out;
-  -ms-transition: all 0.30s ease-in-out;
-  -o-transition: all 0.30s ease-in-out;
   transition: all 0.30s ease-in-out;
   outline: none;
   width: 200px;
   margin-left: 10px;
 }
 
-.form-style-1 input[type=text]:focus,
-.form-style-1 input[type=number]:focus,
-.form-style-1 select:focus {
-  -moz-box-shadow: 0 0 8px #88D5E9;
-  -webkit-box-shadow: 0 0 8px #88D5E9;
+.form-style input[type=text]:focus,
+.form-style input[type=number]:focus,
+.form-style select:focus {
   box-shadow: 0 0 8px #88D5E9;
-  border: 1px solid #88D5E9;
+  border: 2px solid black;
 }
 
-input[type=text]#readonly {
+input[type=text]:read-only, 
+select:disabled {
   color: #aaa;
+  background-color: #eee;
 }
 
-.form-style-1 input[type=submit]:hover, .form-style-1 input[type=button]:hover {
+.form-style input[type=submit]:hover, 
+.form-style input[type=button]:hover {
     background: #4691A4;
     box-shadow: none;
-    -moz-box-shadow: none;
-    -webkit-box-shador: none;
 }
 
-.form-style-1 .required {
+.form-style .required {
    color: red;
 }
 
@@ -179,7 +177,6 @@ input[type=text]#readonly {
    color: red;
    font-weight: bold;
 }
-
 
 a {
   color: #00B7FF;
@@ -193,5 +190,3 @@ a {
   align-content: flex-start;
   gap: 7px;
 }
-
-
