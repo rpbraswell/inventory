@@ -2,8 +2,17 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'InterRegular';
+  src: url('/fonts/Inter-Regular.woff2') format('woff2'), url('/fonts/Inter-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+
 body {
-  font: 14px Arial, Helvetica, sans-serif;
+  /* font: 14px Arial, Helvetica, sans-serif; */
+  font-family: InterRegular;
 }
 
 /*
