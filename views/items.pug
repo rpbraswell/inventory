@@ -2,36 +2,35 @@ extends layout
 
 block content
 
-  .report-heading
-     span Items: 
-     a(href="/items/add") Add Item
+   .report-heading
+      span Items: 
+      a(href="/items/add") Add Item
 
-  div
+   div
       table
          thead
-             tr
-                th Name
-                th Class 
-                th Type
-                th Category
-                th Unit
-                th Qty
-                th Last Update
+            tr
+               th Name
+               th Class 
+               th Type
+               th Category
+               th Unit
+               th Qty
+               th Last Update
          tbody 
             each row in rows
-              tr
-                td #{row[1]}
-                td #{row[2]}
-                td #{row[3]}
-                td #{row[4]}
-                td #{row[5]}
-                td #{row[6]}
-                td #{row[7]}
-                td 
-                   a(href=`/items/update?${row[0]}`) update
-                td 
-                   a(href=`/items/delete?${row[0]}` onclick=`return confirm("Are you sure you want to permanently delete item ${row[1]} and its associated shipping an receiving records?");`) delete
-
-
-    
-    
+               tr
+                  td #{row[1]}
+                  td #{row[2]}
+                  td #{row[3]}
+                  td #{row[4]}
+                  td #{row[5]}
+                  td #{row[6]}
+                  td #{row[7]}
+                  td 
+                     a(href=`/items/update?${row[0]}`) update
+                  td 
+                     a(href=`/items/delete?${row[0]}` onclick=`return confirm("Are you sure you want to permanently delete item ${row[1]}/${row[2]}/${row[3]} and associated shipping and receiving records from the database?")`) delete
+   
+   
+   

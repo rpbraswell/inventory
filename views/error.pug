@@ -1,6 +1,29 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+
+  div(class="modal-container" id="errorContainer")
+    div(class="modal-content")
+      div(class="modal-header")
+        span(class="close") X
+        h2 Error
+      div(class="modal-body")
+        h2= message
+        h2= error.message
+  
+  script.
+    let modal = document.getElementById("errorContainer");
+    let span = document.getElementsByClassName("close")[0];
+    span.onclick = function() {
+      modal.style.display = "none";
+      window.location.href="http://#{hostname}:8080/items";
+    }
+    window.onclick = function(event) {
+      if(event.target == modal ) {
+        modal.style.display = "none";
+        window.location.href="http://#{hostname}:8080/items";
+      }
+    }
+    
+
+    
