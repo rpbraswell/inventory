@@ -66,7 +66,7 @@ router.get('/update', (req, res, next) => {
 
 router.get('/delete', (req, res, next) => {
     let query = url.parse(req.url).query;
-    let id = Number(query) + 1000;
+    let id = Number(query);
     // if any kind of a result is returned then there was no error
     Item.deleteItem(id, (result) => {
         if( result.affectedRows == 1 ) {
