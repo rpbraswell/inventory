@@ -11,89 +11,71 @@ class Receiving {
       this.receivedAt = received.receivedAt;
    }
 
-
-   static receiveItem(receivedQty, itemType, itemClass, itemName, resultHandler) {
-       console.log(`receiveItem() looking for item: ${itemName} ${itemClass} ${itemType}`)
-       
-       Item.findByNameAndClassAndType(itemName, itemClass, itemType, (item) => {
-           if( item instanceof Item ) {
-                console.log("---- found ${itemName} ---");
-                for( const key in item ) {
-                    console.log(`${key}: ${item[key]}`);
-                }
-                pool.getConnection() 
-                .then( (conn) => {
-                    conn.beginTransaction()
-                    .then( () => {
-                       console.log("---- beginning transaction ---");
-                       let qty = Number(receivedQty);
-                       let received = new Receiving({itemId: item.id, qty: receivedQty});
-                       received.insert(conn, (rec) => {
-                               if( rec instanceof Receiving ) {
-                                   console.log("---- inserted Receiving record ---");
-                                   for( const key in rec ) {
-                                       console.log(`${key}: ${rec[key]}`);
-                                   }
-                                   console.log("---- updating ${itemName}  ---");
-                                   item.qty += receivedQty;
-                                   item.update(conn, (res) => {
-                                       if( res instanceof Item) {
-                                           console.log("--- committing transaction ---");
-                                           conn.commit()
-                                           .then( () => {
-                                                console.log("--- successfully commited transaction ---");
-                                                resultHandler(rec);
-                                           })
-                                           .catch( (err) => {
-                                                resultHandler(err);
-                                           })
-                                           .finally( () => {
-                                                conn.end();
-                                           });
-                                       } else {
-                                           console.log("--- rolling back transaction ---");
-                                           conn.rollback()
-                                           .then( () => {
-                                                console.log("successfully rolled back transaction");
-                                           })
-                                           .catch( (err) => {
-                                                console.log(err);
-                                           })
-                                           .finally( () => {
-                                                conn.end();
-                                           });
-                                           resultHandler(res);
-                                       }
-                                   });
-                               } else {
-                                     console.log("--- rolling back transaction ---");
-                                     conn.rollback()
-                                     .then( () => {
-                                         console.log("successfully rolled back transaction");
-                                     })
-                                     .catch( (err) => {
-                                          console.log(err);
-                                     })
-                                     .finally( () => {
-                                          resultHandler(new Error("error inserting new receiving record ${rec.message}"));
-                                          conn.end();
-                                     });
-                               }
+   static receiveItem( item, qty, resultHandler ) {
+    console.log('---in receiveItem()---')
+    pool.getConnection() 
+    .then( (conn) => {
+        conn.beginTransaction()
+        .then( () => {
+           let received = new Receiving({itemId: item.id, qty: qty});
+           received.insert(conn, (receive) => {
+                   if( receive instanceof Receiving ) {
+                        console.log("--- inserted Receiving record ---");
+                       item.qty += qty;
+                       if( item.qty < 0 ) {
+                           item.qty = 0;
+                       }
+                       item.update(conn, (res) => {
+                           if( res instanceof Item) {
+                                console.log('item updated successfully')
+                               conn.commit()
+                               .then( () => {
+                                    resultHandler(receive);
+                               })
+                               .catch( (err) => {
+                                    resultHandler(err);
+                               })
+                               .finally( () => {
+                                    conn.end();
+                               });
+                           } else {
+                               conn.rollback()
+                               .then( () => {
+                                    console.log("successfully rolled back transaction");
+                               })
+                               .catch( (err) => {
+                                    console.log(err);
+                               })
+                               .finally( () => {
+                                    conn.end();
+                               });
+                               resultHandler(res);
+                           }
                        });
-                       
-                    })
-                    .catch( (err) => {
-                        resultHandler(err);
-                    });
-                })
-                .catch( (err) => {
-                    resultHandler(err);
-                });
-           } else {
-               resultHandler(new Error("unable to find item ${itemName}"));
-           }
-       });
-   }
+                   } else {
+                         conn.rollback()
+                         .then( () => {
+                             console.log("successfully rolled back transaction");
+                         })
+                         .catch( (err) => {
+                              console.log(err);
+                         })
+                         .finally( () => {
+                              resultHandler(new Error("error inserting new receiving record ${receive.message}"));
+                              conn.end();
+                         });
+                   }
+                });   // received.insert()
+            })  // conn.beginTransaction
+            .catch( (err) => {
+                resultHandler(err);
+            });
+         })  // conn.getConnection()
+        .catch( (err) => {
+             resultHandler(err);
+        });
+    }
+   
 
    insert(connection, resultHandler) {
 

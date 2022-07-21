@@ -30,7 +30,12 @@ block content
                   td 
                      a(href=`/items/update?${row[0]}`) update
                   td 
-                     a(href=`/items/delete?${row[0]}` onclick=`return confirm("Are you sure you want to permanently delete item ${row[1]}/${row[2]}/${row[3]} and associated shipping and receiving records from the database?")`) delete
-   
+                     a(href=`/items/delete?${row[0]}` onclick=`return confirm("Are you sure you want to permanently delete item ${row[1]}/${row[2]}/${row[3]} and associated shipping and receiving records from the database?")`) delete    
+                  td 
+                     a(href=`/receive?${row[0]}`)  receive
+                  td 
+                     a(href=`/ship?${row[0]}`)  ship
+                  td 
+                     a(href=`/transfer?${row[0]}` class=`${row[8]}`) transfer
    
    

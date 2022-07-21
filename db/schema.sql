@@ -1,9 +1,5 @@
 use warehouse;
 
-drop table if exists receiving;
-drop table if exists shipping;
-drop table if exists items;
-
 create table if not exists `categories` (
         `id` int unsigned not null auto_increment,
 	`category` varchar(80) character set utf8 collate utf8_unicode_ci not null,
@@ -16,11 +12,11 @@ create table if not exists `units` (
 	primary key (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 default charset=utf8;
 
-create table `items` (
+create table if not exists `items` (
 	`id` int unsigned not null auto_increment,
 	`name` varchar(80) character set utf8 collate utf8_unicode_ci not null,
 	`category` int unsigned not null,
-	`itemClass` enum('grocery','USDA') not null default 'grocery',
+	`itemClass` enum('grocery','USDA','seniors','schools') not null default 'grocery',
 	`itemType` enum('dry','frozen','refrigerated') not null default 'dry',
 	`unit` int unsigned not null,
 	`qty` int unsigned not null default '0',
@@ -50,10 +46,20 @@ create table if not exists `shipping` (
 	`qty` int not null,
 	`shippedAt` timestamp not null default current_timestamp on update current_timestamp,
 	primary key (`id`),
-        key `FK_shipped_item` (`itemId`),
+    key `FK_shipped_item` (`itemId`),
 	constraint `FK_shipped_item` foreign key (`itemId`) references `items` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 default charset=utf8;
 
+create table if not exists `transfers` (
+	`id` int unsigned not null auto_increment,
+	`itemId` int unsigned not null,
+	`toClass` varchar(80) character set utf8 collate utf8_unicode_ci not null,
+	`qty` int unsigned not null,
+	`transferredAt` timestamp not null default current_timestamp on update current_timestamp,
+	primary key (`id`),
+    key `FK_transfer` (`itemId`),
+	constraint `FK_transfer` foreign key (`itemId`) references `items` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 default charset=utf8;
 
 
 

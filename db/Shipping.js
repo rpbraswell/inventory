@@ -1,5 +1,6 @@
 
 const pool = require("./db");
+const Item = require("./Item");
 
 class Shipping {
 
@@ -48,37 +49,25 @@ class Shipping {
           });
    }
 
-   static shipItem(shippedQty, itemType, itemClass, itemName, resultHandler) {
-       
-       Item.findByNameAndClassAndType(itemName, itemClass, itemType, (item) => {
-           if( item instanceof Item ) {
-                console.log("---- found ${itemName} ---");
-                for( const key in item ) {
-                    console.log(`${key}: ${item[key]}`);
-                }
+   static shipItem( item, qty, resultHandler ) {
+                console.log('---in shipItem()---')
                 pool.getConnection() 
                 .then( (conn) => {
                     conn.beginTransaction()
                     .then( () => {
-                       console.log("---- beginning transaction ---");
-                       let shipped = new Shipping({itemId: item.id, qty: shippedQty});
+                       let shipped = new Shipping({itemId: item.id, qty: qty});
                        shipped.insert(conn, (ship) => {
                                if( ship instanceof Shipping ) {
-                                   console.log("---- inserted Shipping record ---");
-                                   for( const key in ship ) {
-                                       console.log(`${key}: ${ship[key]}`);
-                                   }
-                                   console.log("---- updating ${itemName}  ---");
-                                   item.qty -= shippedQty;
+                                    console.log("--- inserted Shipping record ---");
+                                   item.qty -= qty;
                                    if( item.qty < 0 ) {
                                        item.qty = 0;
                                    }
                                    item.update(conn, (res) => {
                                        if( res instanceof Item) {
-                                           console.log("--- committing transaction ---");
+                                            console.log('item updated successfully')
                                            conn.commit()
                                            .then( () => {
-                                                console.log("--- successfully commited transaction ---");
                                                 resultHandler(ship);
                                            })
                                            .catch( (err) => {
@@ -88,7 +77,6 @@ class Shipping {
                                                 conn.end();
                                            });
                                        } else {
-                                           console.log("--- rolling back transaction ---");
                                            conn.rollback()
                                            .then( () => {
                                                 console.log("successfully rolled back transaction");
@@ -103,7 +91,6 @@ class Shipping {
                                        }
                                    });
                                } else {
-                                     console.log("--- rolling back transaction ---");
                                      conn.rollback()
                                      .then( () => {
                                          console.log("successfully rolled back transaction");
@@ -116,20 +103,15 @@ class Shipping {
                                           conn.end();
                                      });
                                }
-                       });
-                       
-                    })
+                       });   // shipped.insert()
+                    })  // conn.beginTransaction
                     .catch( (err) => {
                         resultHandler(err);
                     });
-                })
+                })  // conn.getConnection()
                 .catch( (err) => {
                     resultHandler(err);
                 });
-           } else {
-               resultHandler(new Error("unable to find item ${itemName}"));
-           }
-       });
    }
 
    /*
@@ -151,7 +133,7 @@ class Shipping {
     .catch( (err) => {
      resultHandler(err);
     });
-}
+    }
 }
 
 

@@ -144,6 +144,7 @@ class Item {
                   }
               })
               .catch( err => {
+                    console.log('got error getting item by Id')
                   resultHandler(err);
               })
               .finally( () => {

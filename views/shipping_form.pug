@@ -1,0 +1,21 @@
+extends layout
+
+block content
+
+   .form-div
+
+      h2 Ship
+      p(class="shipping") #{item.name} - #{item.itemType} #{item.itemClass} 
+      p(class="shipping") On hand: #{item.qty}
+
+      form(action="/ship", method="POST")
+         ul.form-style
+            li
+               label(for="qty") Ship Qty
+                  span(class="required") *
+               input#qty(type="number", name="qty", placeholder="required", autofocus)
+               input#id(type="number", hidden="true", name="id" value=item.id)
+            li.button-group
+               button(type="submit") Submit
+               button(type="button" onclick="history.back()") Cancel
+

@@ -10,6 +10,8 @@ var receiveRouter = require('./routes/receive');
 var shipRouter    = require('./routes/ship');
 var unitsRouter   = require('./routes/units');
 var categoriesRouter   = require('./routes/categories');
+var transferRouter   = require('./routes/transfer');
+
 
 var app = express();
 
@@ -35,6 +37,8 @@ app.use('/receive', receiveRouter);
 app.use('/ship',    shipRouter);
 app.use('/units',    unitsRouter);
 app.use('/categories',  categoriesRouter);
+app.use('/transfer',  transferRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
