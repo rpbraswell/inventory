@@ -29,7 +29,7 @@ router.get('/', (req, res, next) => {
      Item.getClassValues( (itemClasses) => {
          Item.getItemById(id, (item) => {
                if( item instanceof Item ) {
-                    res.render('transfer_form', {hostname: req.hostname, item: item, itemClasses: itemClasses.filter( (e) => {return e.match(/seniors|schools/)})});
+                    res.render('transfer_form', {hostname: req.hostname, item: item, itemClasses: itemClasses.filter( (e) => {return e != item.itemClass})});
                } else {
                     let error = new Error(JSON.stringify(item));
                     res.render('error', {message: `could not find item to transfer`, error: error, hostname: req.hostname} );

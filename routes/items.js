@@ -9,18 +9,7 @@ var Unit = require('../db/Unit');
 router.get('/', function(req, res, next) {
     try {
         Item.getItems( (rows) => {
-            let nrows = undefined;
-            if( rows.length > 0 ) {
-                nrows = rows.map( (r) => {
-                    if( r[2].match(/schools|seniors/)) {
-                        r.push("disabled");
-                    } else {
-                        r.push("active");
-                    }
-                    return r;
-                })
-            }
-            res.render('items', {rows: nrows});
+            res.render('items', {rows: rows});
         });
     } catch(err) {
         res.render('error', {message: 'Error getting items', error: err} );
