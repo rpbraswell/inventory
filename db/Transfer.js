@@ -126,7 +126,7 @@ class Transfer {
     *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
     */
    static intervalTransfer( days = 30, resultHandler ) {
-       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(t.qty) as 'Transferred', t.toClass as 'To' from transfers t, items i where t.itemId = i.id and t.transferredAt > date_sub(current_date, interval ${days} day) group by t.itemId order by i.name,i.itemClass,i.itemType`;
+       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(t.qty) as 'Transferred', t.toClass as 'To' from transfers t, items i where t.itemId = i.id and t.transferredAt > date_sub(current_date, interval ${days} day) group by t.itemId,t.toClass order by i.name,i.itemClass,i.itemType`;
        pool.getConnection()
        .then( conn => { 
           conn.query(sql)
