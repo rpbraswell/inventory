@@ -3,13 +3,15 @@ extends layout
 block content
 
   .report-heading
-     span Shipping Report: 
-     span 
-        form(class="form-horizontal" action="/ship/report", method="get") 
+     span Shipping Summary Report: 
+     form(class="form-horizontal" action="/ship/report", method="get") 
            label(for="interval") Last 
-           input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
-           label Days
-           input(type="submit" value="Refresh")
+           input#interval( style='max-width: 50px; margin: 0 0 0 0; padding: 0 0 0 0;' value=days name="interval" type="number") 
+           label(style="margin-left: 0; padding: 0 0 0 0") Days
+           input(id="refresh" type="submit" value="Refresh")
+     button(onclick=`window.location.href='/ship/report/csv?interval=${days}'`) Download CSV
+     div(class="vertical-bar")
+     button(class="report-details" onclick="window.location.href='/ship/report/details?interval=30&sort=name'") Shipping Details
 
   div
       table
@@ -20,6 +22,7 @@ block content
                 th Type
                 th Shipped
                 th On Hand
+                th Last Ship
          tbody 
             each row in rows
               tr
@@ -28,4 +31,5 @@ block content
                 td #{row.Type}
                 td #{row.Shipped}
                 td #{row["On Hand"]}
+                td #{row["Last Ship"]}
  

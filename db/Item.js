@@ -67,7 +67,7 @@ class Item {
    }
 
    _update(conn, resultHandler, endConnection) {
-          conn.query("update items set category = ?, unit = ?, qty = ? where id = ?", [this.category, this.unit, this.qty, this.id]) 
+          conn.query("update items set name = ?,  category = ?, unit = ?, qty = ? where id = ?", [this.name, this.category, this.unit, this.qty, this.id]) 
           .then( res =>  {
                 resultHandler(this);
           })

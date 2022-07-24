@@ -5,7 +5,7 @@ block content
    .form-div
 
       h2 Receive
-      p(class="shipping") #{item.name} - #{item.itemType} #{item.itemClass} 
+      p(class="shipping") #{item.itemType} #{item.itemClass} #{item.name}
       p(class="shipping") On hand: #{item.qty}
 
       form(action="/receive", method="POST")

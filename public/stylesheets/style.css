@@ -62,13 +62,35 @@ nav button {
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: center;
-    align-content: space-between;
-    gap: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-top: 10px;
-    margin-bottom: 2px;
+    gap: 10px;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 10px 0 2px 0;
+}
+
+.report-heading span {
+  font-weight: bold;
+}
+
+.report-heading select {
+  padding: 0 0 0 0;
+  margin-right: 20px;
+  margin-left: 0px;
+  max-width: 110px;
+}
+
+.report-heading #refresh {
+  margin-left: 10px;
+}
+
+.report-heading input + label, 
+.report-heading select + label {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.report-heading label + label {
+  margin-left: 20px;
 }
 
 table {
@@ -200,6 +222,14 @@ a {
   gap: 7px;
 }
 
+.vertical-bar {
+  height: 1.2em;
+  border-left: 2px solid black;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+
 /* modeal dialog */
 .modal-container {
   position: fixed;
@@ -268,11 +298,7 @@ a {
   align-self: flex-start;
   margin: 0 0 0 0.5em;
 }
+
 .shipping + .shipping {
   margin-top: 5px;
-}
-
-a.disabled {
-  pointer-events: none;
-  color: #ddd;
 }

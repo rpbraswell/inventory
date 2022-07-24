@@ -10,6 +10,10 @@ block content
            input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
            label Days
            input(type="submit" value="Refresh")
+     button(onclick=`window.location.href='/transfer/report/csv?interval=${days}'`) Download CSV
+     div(class="vertical-bar")
+     button(class="report-details" onclick="window.location.href='/transfer/report/details?interval=30&sort=name'") Transfer Details
+
 
   div
       table
@@ -20,6 +24,7 @@ block content
                 th Type
                 th Qty
                 th To
+                th Last Transfer
          tbody 
             each row in rows
               tr
@@ -28,4 +33,5 @@ block content
                 td #{row.Type}
                 td #{row.Transferred}
                 td #{row.To}
+                td #{row["Last Transfer"]}
  

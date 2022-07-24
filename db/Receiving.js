@@ -118,7 +118,7 @@ class Receiving {
     *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
     */
    static intervalReceived( days = 30, resultHandler ) {
-       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(r.qty) as 'Received', i.qty as 'On Hand' from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) group by r.itemId order by i.name,i.itemClass,i.itemType`;
+       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(r.qty) as 'Received', i.qty as 'On Hand', DATE_FORMAT(max(r.receivedAt),"%M %d %Y %r") as 'Last Receive' from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) group by r.itemId order by i.name,i.itemClass,i.itemType`;
        pool.getConnection()
        .then( conn => { 
           conn.query(sql)
@@ -126,13 +126,65 @@ class Receiving {
                resultHandler(res);
           })
           .catch( (err) => {
-               throw err;
+               resultHandler(err);
+          })
+          .finally( () => {
+               conn.end();
           })
         })
        .catch( (err) => {
-        resultHandler(err);
+            resultHandler(err);
        });
    }
+
+   /*
+    *  Get the sum of the receiving records for the last days grouped by item
+    *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
+    */
+        static intervalReceivedDetails( days = 30, sortField = "name", resultHandler ) {
+            let orderBy = `order by i.name,i.itemClass,i.itemType`;
+            if( sortField != "name") {
+                orderBy = `order by ${sortField}`;
+            }
+            let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', r.qty as 'Received', DATE_FORMAT(r.receivedAt,"%M %d %Y %r") as 'Received At' from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) ${orderBy}`;
+            pool.getConnection()
+            .then( conn => { 
+               conn.query(sql)
+               .then( (res) => {
+                    resultHandler(res);
+               })
+               .catch( (err) => {
+                    resultHandler(err);
+               })
+               .finally( () => {
+                  conn.end();
+               })
+             })
+            .catch( (err) => {
+                resultHandler(err);
+            });
+        }
+
+        static intervalReceivedCSV( days = 30, file, resultHandler ) {
+            let sql = `(select 'Name', 'Class', 'Type', 'Received', 'On Hand', 'Last Receive') union (select i.name, i.itemClass, i.itemType, sum(r.qty), i.qty, DATE_FORMAT(max(r.receivedAt),"%M %d %Y %r")  from receiving r, items i where r.itemId = i.id and r.receivedAt > date_sub(current_date, interval ${days} day) group by r.itemId order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
+            console.log(`sql: ${sql}`);
+            pool.getConnection()
+            .then( conn => { 
+                conn.query(sql)
+                .then( (res) => {
+                    resultHandler("success");
+                })
+                .catch( (err) => {
+                    resultHandler(err);
+                })
+                .finally( () => {
+                    conn.end();
+            })
+         })
+        .catch( (err) => {
+            resultHandler(err);
+        });
+        }
 }
 
 module.exports = Receiving;

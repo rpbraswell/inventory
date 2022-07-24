@@ -3,6 +3,7 @@ var router = express.Router();
 var Transfer = require('../db/Transfer');
 var url  = require('url');
 var Item = require('../db/Item');
+var path = require('path');
 
 router.post('/rest', (req, res, next) => {
     console.log(`trasfer: ` + JSON.stringify(req.body));
@@ -43,10 +44,8 @@ router.get('/', (req, res, next) => {
      let id = Number(req.body.id);
      let qty = Number(req.body.qty);
      let toClass = req.body.toClass;
-     console.trace(`transferring ${id} ${qty} ${toClass}`);
      Item.getItemById(id, (item) => {        
           if( item instanceof Item) {
-               console.log(`found item to transfer ${item.name} ${item.itemClass} ${item.itemType}`)
                Transfer.transferItem(item, qty, toClass, (result) => {
                     if( result instanceof Item) {
                          res.redirect("/items");
@@ -56,7 +55,6 @@ router.get('/', (req, res, next) => {
                     }
                });
           } else {
-               console.trace(item);
                let error = new Error(item.text);
                res.render('error',{message: 'error transferring item: could not locate item to transfer', error: error, hostname: req.hostname} )
           }
@@ -66,14 +64,48 @@ router.get('/', (req, res, next) => {
 router.get('/report', (req, res, next) => {
      let query = url.parse(req.url).query;
      const [interval, days] = query.split("=");
-     try {
-        Transfer.intervalTransfer(days, (result) => {
-          console.log(JSON.stringify(result));
-          res.render('transfer_report', {days: days, rows: result})
+     Transfer.intervalTransfer(days, (result) => {
+          if( Array.isArray(result)) {
+               res.render('transfer_report', {days: days, rows: result});
+          } else {
+               res.render('error', { message: 'error getting transfer report', error: result, hostname: req.hostname});
+          }
      }); 
-     } catch(err) {
-        console.log(err);
-     }
 });
 
+router.get('/report/csv', (req, res, next) => {
+     let query = url.parse(req.url).query;
+     const [interval, days] = query.split("=");
+     console.log("qyery: ", query);
+
+     let reportDir = process.env.REPORT_DIRECTORY;
+     let date = new Date();
+     let reportName = `transfer_summary_report_${days}d_${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.csv`;
+     let reportFile = path.join(reportDir, reportName);
+     reportFile = reportFile.replace(/\\/g, '/')
+
+     console.log("reportFile: ",reportFile);
+    
+     Transfer.intervalTransferredCSV(days, reportFile, (result) => {
+          if( result  == "success" ) {
+               res.download(reportFile);
+          } else {
+               res.render('error', {message: 'error getting transfer summary csv report', error: result, hostname: req.hostname});
+          }
+     }); 
+});
+
+router.get('/report/details', (req, res, next) => {
+     let query = url.parse(req.url).query;
+     const [q1, q2 ] = query.split("&");
+     const [interval, days] = q1.split("=");
+     const [ sort, sortField ] = q2.split("=");
+     Transfer.intervalTransferredDetails(days, sortField, (result) => {
+          if( Array.isArray(result)) {
+               res.render('transfer_report_details', {days: days, rows: result, sortField: sortField})
+          } else {
+               res.render('error', {message: 'error getting transfer report', error: result, hostname: req.hostname});
+          }
+     }); 
+});
 module.exports = router;

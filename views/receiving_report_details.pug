@@ -1,0 +1,36 @@
+extends layout
+
+block content
+
+  .report-heading
+     span Receiving Details Report: 
+     form(class="form-horizontal" action="/receive/report/details", method="get") 
+           label(for="interval") Last 
+           input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
+           label Days
+           label(for="sort") Sort By: 
+           select#sort(name="sort") 
+               option(value="name", selected=sortField == "name") Name 
+               option(value="receivedAt", selected=sortField == "receivedAt") Received At
+           input(id="refresh" type="submit" value="Refresh")
+     div(class="vertical-bar")
+     button(onclick="window.location.href='/receive/report?interval=30&sort=name'") Receiving Summary
+
+  div
+      table
+         thead
+             tr
+                th Name
+                th Class 
+                th Type
+                th Received
+                th Received At
+         tbody 
+            each row in rows
+              tr
+                td #{row.Name}
+                td #{row.Class}
+                td #{row.Type}
+                td #{row.Received}
+                td #{row["Received At"]}
+ 

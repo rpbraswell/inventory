@@ -126,7 +126,7 @@ class Transfer {
     *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
     */
    static intervalTransfer( days = 30, resultHandler ) {
-       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(t.qty) as 'Transferred', t.toClass as 'To' from transfers t, items i where t.itemId = i.id and t.transferredAt > date_sub(current_date, interval ${days} day) group by t.itemId,t.toClass order by i.name,i.itemClass,i.itemType`;
+       let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', sum(t.qty) as 'Transferred', t.toClass as 'To', DATE_FORMAT(max(t.transferredAt), "%M %d %Y %r") as 'Last Transfer' from transfers t, items i where t.itemId = i.id and t.transferredAt > date_sub(current_date, interval ${days} day) group by t.itemId,t.toClass order by i.name,i.itemClass,i.itemType`;
        pool.getConnection()
        .then( conn => { 
           conn.query(sql)
@@ -134,13 +134,68 @@ class Transfer {
                resultHandler(res);
           })
           .catch( (err) => {
-               throw err;
+               resultHandler(err);
+          })
+          .finally( () => {
+             conn.end();
           })
         })
        .catch( (err) => {
-        resultHandler(err);
+            resultHandler(err);
        });
-   }
+
+
+    }
+
+     /*
+    *  Get the sum of the transfer records for the last days grouped by item
+    *  throws an error if the query failes to calls to this function should be wrapped in a try/catch block
+    */
+     static intervalTransferredDetails( days = 30, sortField = "name", resultHandler ) {
+        let orderBy = `order by i.name,i.itemClass,i.itemType`;
+        if( sortField != "name") {
+            orderBy = `order by ${sortField}`;
+        }
+        let sql = `select i.name as 'Name', i.itemClass as 'Class', i.itemType as 'Type', t.qty as 'Transferred', t.toClass as 'To', DATE_FORMAT(t.transferredAt,"%M %d %Y %r") as 'Transferred At' from transfers t, items i where t.itemId = i.id and t.transferredAt > date_sub(current_date, interval ${days} day) ${orderBy}`;
+        pool.getConnection()
+        .then( conn => { 
+           conn.query(sql)
+           .then( (res) => {
+                resultHandler(res);
+           })
+           .catch( (err) => {
+                resultHandler(err);
+           })
+           .finally( () => {
+              conn.end();
+           })
+         })
+        .catch( (err) => {
+            resultHandler(err);
+        });
+    }
+
+    static intervalTransferredCSV( days = 30, file, resultHandler ) {
+        let sql = `(select 'Name', 'Class', 'Type', 'Transferred', 'To Class', 'Last Transfer') union (select i.name, i.itemClass, i.itemType, sum(t.qty), t.toClass, DATE_FORMAT(max(t.transferredAt),"%M %d %Y %r")  from transfers t, items i where t.itemId = i.id and t.transferredAt > date_sub(current_date, interval ${days} day) group by t.itemId order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
+        console.log(`sql: ${sql}`);
+        pool.getConnection()
+        .then( conn => { 
+            conn.query(sql)
+            .then( (res) => {
+                resultHandler("success");
+            })
+            .catch( (err) => {
+                resultHandler(err);
+            })
+            .finally( () => {
+                conn.end();
+        })
+     })
+    .catch( (err) => {
+        resultHandler(err);
+    });
+    }
 }
+
 
 module.exports = Transfer;

@@ -3,7 +3,7 @@ var router = express.Router();
 var Receiving = require('../db/Receiving');
 var url  = require('url');
 var Item = require('../db/Item');
-
+var path = require('path');
 
 router.post('/rest', (req, res, next) => {
     console.log(`received: ` + JSON.stringify(req.body));
@@ -72,14 +72,49 @@ router.post("/", (req, res, next) => {
 router.get('/report', (req, res, next) => {
      let query = url.parse(req.url).query;
      const [interval, days] = query.split("=");
-     try {
-        Receiving.intervalReceived(days, (result) => {
-          console.log(JSON.stringify(result));
-          res.render('receiving_report', {days: days, rows: result})
+     Receiving.intervalReceived(days, (result) => {
+          if( Array.isArray(result)) {
+               res.render('receiving_report', {days: days, rows: result})
+          } else {
+               res.render('error', {message: 'error getting receiving report', error: result, hostname: req.hosthame});
+          }
      }); 
-     } catch(err) {
-        console.log(err);
-     }
+});
+
+router.get('/report/csv', (req, res, next) => {
+     let query = url.parse(req.url).query;
+     const [interval, days] = query.split("=");
+     console.log("qyery: ", query);
+
+     let reportDir = process.env.REPORT_DIRECTORY;
+     let date = new Date();
+     let reportName = `receive_summary_report_${days}d_${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.csv`;
+     let reportFile = path.join(reportDir, reportName);
+     reportFile = reportFile.replace(/\\/g, '/')
+
+     console.log("reportFile: ",reportFile);
+    
+     Receiving.intervalReceivedCSV(days, reportFile, (result) => {
+          if( result  == "success" ) {
+               res.download(reportFile);
+          } else {
+               res.render('error', {message: 'error getting receiving summary csv report', error: result, hostname: req.hostname});
+          }
+     }); 
+});
+
+router.get('/report/details', (req, res, next) => {
+     let query = url.parse(req.url).query;
+     const [q1, q2 ] = query.split("&");
+     const [interval, days] = q1.split("=");
+     const [ sort, sortField ] = q2.split("=");
+     Receiving.intervalReceivedDetails(days, sortField, (result) => {
+          if( Array.isArray(result)) {
+               res.render('receiving_report_details', {days: days, rows: result, sortField: sortField})
+          } else {
+               res.render('error', {message: 'error getting receiving report', error: result, hostname: req.hostname});
+          }
+     }); 
 });
 
 module.exports = router;
