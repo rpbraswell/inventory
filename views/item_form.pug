@@ -38,11 +38,16 @@ block content
                      each unit in units
                          option(value=unit[0] selected=(item.unit ? unit[0] == item.unit : false) ) #{unit[1]}
                li
+                  label(for="pkgQty") Pkg Qty
+                  input#pkgQty(type="number", name="pkgQty", value=(item.pkgQty ? item.qty : 1), min=1 )
+
+               li
                   label(for="qty") Qty On Hand
                   input#qty(type="number", name="qty", value=(item.qty ? item.qty : 0), min=0 )
+
                li.button-group
                   button(type="submit") Submit
-                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
+                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/items?filter=all"`) Cancel
 
                .error 
                   each message in messages

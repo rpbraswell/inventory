@@ -56,7 +56,7 @@ router.post("/", (req, res, next) => {
                console.log(`found item to ship ${item.name} ${item.itemClass} ${item.itemType}`)
                Shipping.shipItem(item, qty, (result) => {
                     if( result instanceof Shipping) {
-                         res.redirect("/items");
+                         res.redirect("/items?filter=all");
                     } else {
                          let error = new Error(result.text);
                          res.render('error', {message: 'error shipping item: result is not an instance of Shipping', error: error, hostname: req.hostname});

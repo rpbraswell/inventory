@@ -55,7 +55,7 @@ router.post("/", (req, res, next) => {
                console.log(`found item to receive ${item.name} ${item.itemClass} ${item.itemType}`)
                Receiving.receiveItem(item, qty, (result) => {
                     if( result instanceof Receiving) {
-                         res.redirect("/items");
+                         res.redirect("/items?filter=all");
                     } else {
                          let error = new Error(result.text);
                          res.render('error', {message: 'error receiving item: result is not an instance of Shipping', error: error, hostname: req.hostname});

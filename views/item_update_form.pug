@@ -35,12 +35,17 @@ block content
                       each unit in units
                           option(value=unit[0] selected=unit[0] == item.unit) #{unit[1]}
                li
+                  label(for="pkgQty") Pkg Qty 
+                  input#pkgGty(type="number", name="pkgQty", value=item.pkgQty)
+
+               li
                   label(for="qty") Enter Item Qty
                   input#qty(type="number", name="qty", value=item.qty, autofocus )
                   input#id(type="number", hidden="true", name="id" value=item.id)
+                  
                li.button-group
                   button(type="submit") Submit
-                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/items"`) Cancel
+                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/items?filter=all"`) Cancel
 
             .error 
                  each message in messages

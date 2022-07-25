@@ -10,6 +10,7 @@ class Item {
       this.category   = item.category ? Number(item.category)   : 0;
       this.unit       = item.unit     ? Number(item.unit)       : 0;
       this.qty        = item.qty      ? Number(item.qty)        : 0;
+      this.pkgQty     = item.pkgQty   ? Number(item.pkgQty)     : 1;
       this.lastUpdate = item.lastUpdate;
    }
 
@@ -67,7 +68,7 @@ class Item {
    }
 
    _update(conn, resultHandler, endConnection) {
-          conn.query("update items set name = ?,  category = ?, unit = ?, qty = ? where id = ?", [this.name, this.category, this.unit, this.qty, this.id]) 
+          conn.query("update items set name = ?,  category = ?, unit = ?, pkgQty = ?, qty = ? where id = ?", [this.name, this.category, this.unit, this.pkgQty, this.qty, this.id]) 
           .then( res =>  {
                 resultHandler(this);
           })
@@ -160,7 +161,7 @@ class Item {
       let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
       pool.getConnection()
       .then( conn => {
-            let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} order by i.name,i.itemClass,i.itemType`;
+            let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.pkgQty,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} order by i.name,i.itemClass,i.itemType`;
             console.log(sql);
             conn.query( {rowsAsArray: true,  sql: sql } )
             .then( rows => {
@@ -254,7 +255,7 @@ class Item {
 
     static itemsCSV(filterClass, file, resultHandler ) {
         let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
-        let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
+        let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'Pkg Qty', 'On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.pkgQty, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
         console.log(`sql: ${sql}`);
         pool.getConnection()
         .then( conn => { 

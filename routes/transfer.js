@@ -48,7 +48,7 @@ router.get('/', (req, res, next) => {
           if( item instanceof Item) {
                Transfer.transferItem(item, qty, toClass, (result) => {
                     if( result instanceof Item) {
-                         res.redirect("/items");
+                         res.redirect("/items?filter=all");
                     } else {
                          let error = new Error(result.text);
                          res.render('error', {message: 'error transferring item: result is not an instance of Item', error: error, hostname: req.hostname});
@@ -108,4 +108,5 @@ router.get('/report/details', (req, res, next) => {
           }
      }); 
 });
+
 module.exports = router;

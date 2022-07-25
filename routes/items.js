@@ -77,6 +77,7 @@ router.get('/update', (req, res, next) => {
                 Item.getClassValues( (itemClasses) => {
                     Item.getTypeValues( (itemTypes) => {
                         Item.getItemById(id,  (item) => {
+                            console.log(item);
                             res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemClasses: itemClasses, itemTypes: itemTypes, item: item, categories: categories, units: units, messages: [] });
                         });
                     });
@@ -95,7 +96,7 @@ router.get('/delete', (req, res, next) => {
     // if any kind of a result is returned then there was no error
     Item.deleteItem(id, (result) => {
         if( result.affectedRows == 1 ) {
-           res.redirect('/items');
+           res.redirect('/items?filter=all');
         } else if(result.affectedRows === 0 ) {
             let error = new Error("item does not exist");
             console.log(error);
@@ -108,6 +109,7 @@ router.get('/delete', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
     let item = new Item(req.body);
+    console.log(item);
     let operation = "";
     try {
         if( item.id ) {
@@ -116,7 +118,7 @@ router.post('/', (req, res, next) => {
                 if( status.ok ) {
                     item.update(undefined, (result) => {
                         if( result instanceof Item ) {
-                             res.redirect('/items'); 
+                             res.redirect('/items?filter=all'); 
                         }
                     });
                 } else {
@@ -138,7 +140,7 @@ router.post('/', (req, res, next) => {
                 if( status.ok ) {
                     item.insert(undefined, (result) => {
                         if( result instanceof Item ) {
-                            res.redirect("/items");
+                            res.redirect("/items?filter=all");
                         } 
                     });
                 } else {
