@@ -118,6 +118,9 @@ tr:hover {
   background-color: yellow;
 }
 
+select {
+  background-color: #fff;
+}
 
 /*
  * forms
