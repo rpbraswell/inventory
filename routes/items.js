@@ -4,16 +4,41 @@ var url  = require('url')
 var Item = require('../db/Item');
 var Category = require('../db/Category');
 var Unit = require('../db/Unit');
+var path = require('path');
 
 /* GET items listing. */
 router.get('/', function(req, res, next) {
-    try {
-        Item.getItems( (rows) => {
-            res.render('items', {rows: rows});
+    let query = url.parse(req.url).query;
+    console.log(query);
+    let [filter, filterClass] = query.split("=");
+    Item.getClassValues( (itemClasses) => {
+        Item.getItems(filterClass, (rows) => {
+            res.render('items', {rows: rows, filterClass: filterClass, itemClasses: itemClasses});
         });
-    } catch(err) {
-        res.render('error', {message: 'Error getting items', error: err} );
-    }
+    })
+});
+
+router.get('/report/csv', (req, res, next) => {
+    let query = url.parse(req.url).query;
+    console.log(query);
+    let [filter, filterClass] = query.split("=");
+    console.log("qyery: ", query);
+
+    let reportDir = process.env.REPORT_DIRECTORY;
+    let date = new Date();
+    let reportName = `item_report_${filterClass}_${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.csv`;
+    let reportFile = path.join(reportDir, reportName);
+    reportFile = reportFile.replace(/\\/g, '/')
+
+    console.log("reportFile: ",reportFile);
+   
+    Item.itemsCSV(filterClass, reportFile, (result) => {
+         if( result  == "success" ) {
+              res.download(reportFile);
+         } else {
+              res.render('error', {message: 'error getting item csv report', error: result, hostname: req.hostname});
+         }
+    }); 
 });
 
 /* GET items listing for mobile app */

@@ -5,6 +5,14 @@ block content
    .report-heading
       span Items: 
       a(href="/items/add") Add Item
+      form(class="form-horizontal" action="/items", method="get") 
+           label(for="filter") Filter 
+           select#filter(name="filter") 
+               option(value="all", selected=filterClass == "all") all
+                     each itemClass in itemClasses 
+                        option(value=itemClass, selected=itemClass == filterClass) #{itemClass}
+           input(class="refresh" type="submit" value="Refresh")
+      button(onclick=`window.location.href='/items/report/csv?filter=${filterClass}'`) Download CSV
 
    div
       table

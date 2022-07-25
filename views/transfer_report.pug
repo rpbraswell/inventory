@@ -9,7 +9,7 @@ block content
            label(for="interval") Last 
            input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
            label Days
-           input(type="submit" value="Refresh")
+           input(class="refresh" type="submit" value="Refresh")
      button(onclick=`window.location.href='/transfer/report/csv?interval=${days}'`) Download CSV
      div(class="vertical-bar")
      button(class="report-details" onclick="window.location.href='/transfer/report/details?interval=30&sort=name'") Transfer Details

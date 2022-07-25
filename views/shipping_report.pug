@@ -8,7 +8,7 @@ block content
            label(for="interval") Last 
            input#interval( style='max-width: 50px; margin: 0 0 0 0; padding: 0 0 0 0;' value=days name="interval" type="number") 
            label(style="margin-left: 0; padding: 0 0 0 0") Days
-           input(id="refresh" type="submit" value="Refresh")
+           input(class="refresh" type="submit" value="Refresh")
      button(onclick=`window.location.href='/ship/report/csv?interval=${days}'`) Download CSV
      div(class="vertical-bar")
      button(class="report-details" onclick="window.location.href='/ship/report/details?interval=30&sort=name'") Shipping Details

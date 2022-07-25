@@ -156,10 +156,12 @@ class Item {
           });
    }
 
-   static getItems( resultHandler ) {
+   static getItems(filterClass, resultHandler ) {
+      let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
       pool.getConnection()
       .then( conn => {
-            let sql = 'select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id order by i.name';
+            let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} order by i.name,i.itemClass,i.itemType`;
+            console.log(sql);
             conn.query( {rowsAsArray: true,  sql: sql } )
             .then( rows => {
                  resultHandler(rows);
@@ -248,6 +250,28 @@ class Item {
       .catch( (err) => {
           resultHandler(err);
        });
+    }
+
+    static itemsCSV(filterClass, file, resultHandler ) {
+        let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
+        let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
+        console.log(`sql: ${sql}`);
+        pool.getConnection()
+        .then( conn => { 
+            conn.query(sql)
+            .then( (res) => {
+                resultHandler("success");
+            })
+            .catch( (err) => {
+                resultHandler(err);
+            })
+            .finally( () => {
+                conn.end();
+        })
+     })
+    .catch( (err) => {
+        resultHandler(err);
+    });
     }
 
 }

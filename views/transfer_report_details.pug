@@ -12,7 +12,7 @@ block content
            select#sort(name="sort") 
                option(value="name", selected=sortField == "name") Name 
                option(value="transferredAt", selected=sortField == "transferredAt") Transferred At
-           input(id="refresh" type="submit" value="Refresh")
+           input(class="refresh" type="submit" value="Refresh")
      div(class="vertical-bar")
      button(onclick="window.location.href='/transfer/report?interval=30'") Transfer Summary
 

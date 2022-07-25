@@ -12,9 +12,9 @@ block content
            select#sort(name="sort") 
                option(value="name", selected=sortField == "name") Name 
                option(value="receivedAt", selected=sortField == "receivedAt") Received At
-           input(id="refresh" type="submit" value="Refresh")
+           input(class="refresh" type="submit" value="Refresh")
      div(class="vertical-bar")
-     button(onclick="window.location.href='/receive/report?interval=30&sort=name'") Receiving Summary
+     button(onclick="window.location.href='/receive/report?interval=30'") Receiving Summary
 
   div
       table
