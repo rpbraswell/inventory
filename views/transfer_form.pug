@@ -5,21 +5,25 @@ block content
   .form-div
 
       h2 Transfer
-      p(class="shipping") #{item.itemType} #{item.itemClass} #{item.name} 
+      p(class="shipping") From: #{item.itemType} #{item.itemClass} #{item.name} 
       p(class="shipping") On hand: #{item.qty}
+      p(class="shipping") Package Qty: #{item.pkgQty}
 
       form(action="/transfer", method="POST")
          ul.form-style
             li
-               label(for="itemClass") To Class 
+               label(for="itemClass") To Class: 
                select#toClass(name="toClass", class="field-select", required, autofocus)
                   option(value="", selected) -select-
                   each itemClass in itemClasses 
                         option(value=itemClass) #{itemClass}
+            li 
+               label(for="split") Split Package?
+               input#split(name="split" type="checkbox" disabled=item.pkgQty == 1 ? true : false)
+
             li
-               label(for="qty") Transfer Qty
-                  span(class="required") *
-               input#qty(type="number", name="qty", placeholder="required")
+               label(for="qty") Transfer Qty:
+               input#qty(type="number", name="qty", placeholder="required" required)
                input#id(type="number", hidden="true", name="id" value=item.id)
             li.button-group
                button(type="submit") Submit

@@ -96,8 +96,8 @@ class Item {
    }
 
    _insert(conn, resultHandler, endConnection) {
-          conn.query("insert into items (name, itemClass, itemType, category, unit, qty) values (?,?,?,?,?,?)", 
-                 [this.name, this.itemClass, this.itemType, this.category, this.unit, this.qty])
+          conn.query("insert into items (name, itemClass, itemType, category, unit, pkgQty, qty) values (?,?,?,?,?,?,?)", 
+                 [this.name, this.itemClass, this.itemType, this.category, this.unit, this.pkgQty, this.qty])
           .then( (res) =>  {
                 this.id = res.insertId;
                 resultHandler(this);
@@ -255,7 +255,7 @@ class Item {
 
     static itemsCSV(filterClass, file, resultHandler ) {
         let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
-        let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'Pkg Qty', 'On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.pkgQty, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
+        let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'Pkg Qty', 'Units On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.pkgQty, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
         console.log(`sql: ${sql}`);
         pool.getConnection()
         .then( conn => { 

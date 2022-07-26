@@ -22,8 +22,10 @@ block content
                 th Name
                 th Class 
                 th Type
-                th Qty
-                th To
+                th Unit
+                th Units Transferred
+                th Qty per Unit
+                th To Class
                 th Last Transfer
          tbody 
             each row in rows
@@ -31,7 +33,9 @@ block content
                 td #{row.Name}
                 td #{row.Class}
                 td #{row.Type}
+                td #{row.Unit}
                 td #{row.Transferred}
+                td #{row["Package Qty"]}
                 td #{row.To}
                 td #{row["Last Transfer"]}
  

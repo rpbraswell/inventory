@@ -44,9 +44,11 @@ router.get('/', (req, res, next) => {
      let id = Number(req.body.id);
      let qty = Number(req.body.qty);
      let toClass = req.body.toClass;
+     let split = req.body.split ? true : false;
+     console.log("id: ", id, "qty: ", qty, "toClass: ", toClass, "split: ", split);
      Item.getItemById(id, (item) => {        
           if( item instanceof Item) {
-               Transfer.transferItem(item, qty, toClass, (result) => {
+               Transfer.transferItem(item, qty, toClass, split, (result) => {
                     if( result instanceof Item) {
                          res.redirect("/items?filter=all");
                     } else {
