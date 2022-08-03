@@ -1,0 +1,21 @@
+extends layout
+
+block content
+
+  .report-heading
+     span Monthly Shipping Report For:   #{item.name} #{item.itemClass} #{item.itemType}, Pgk Qty: #{item.pkgQty}, On Hand: #{item.qty} 
+
+  div
+      table
+         thead
+             tr
+                th Year
+                th Month 
+                th Shippments
+         tbody 
+            each row in rows
+              tr
+                td #{row.Year}
+                td #{row.Month}
+                td #{row.Shippments}
+ 

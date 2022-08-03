@@ -5,6 +5,7 @@ var Item = require('../db/Item');
 var Category = require('../db/Category');
 var Unit = require('../db/Unit');
 var path = require('path');
+var Shipping = require('../db/shipping');
 
 /* GET items listing. */
 router.get('/', function(req, res, next) {
@@ -20,17 +21,12 @@ router.get('/', function(req, res, next) {
 
 router.get('/report/csv', (req, res, next) => {
     let query = url.parse(req.url).query;
-    console.log(query);
     let [filter, filterClass] = query.split("=");
-    console.log("qyery: ", query);
-
     let reportDir = process.env.REPORT_DIRECTORY;
     let date = new Date();
     let reportName = `item_report_${filterClass}_${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.csv`;
     let reportFile = path.join(reportDir, reportName);
     reportFile = reportFile.replace(/\\/g, '/')
-
-    console.log("reportFile: ",reportFile);
    
     Item.itemsCSV(filterClass, reportFile, (result) => {
          if( result  == "success" ) {
@@ -104,6 +100,21 @@ router.get('/delete', (req, res, next) => {
         } else {
             res.render('error', {message: `unable to delete item with id ${id}`, error: new Error(result.text), hostname: req.hostname} );
         }
+    });
+});
+
+router.get('/reports', (req, res, next) => {
+    let query = url.parse(req.url).query;
+    let id = Number(query);
+    // if any kind of a result is returned then there was no error
+    Item.getItemById(id, (item) => {
+        Shipping.itemShippingReport(id, (report) => {
+            if(Array.isArray(report)) {
+                res.render('item_shipping_report', { item: item, rows: report})
+            } else {
+                res.render('error', {error: report})
+            }
+        });
     });
 });
 

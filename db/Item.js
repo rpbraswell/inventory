@@ -162,7 +162,6 @@ class Item {
       pool.getConnection()
       .then( conn => {
             let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.pkgQty,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} order by i.name,i.itemClass,i.itemType`;
-            console.log(sql);
             conn.query( {rowsAsArray: true,  sql: sql } )
             .then( rows => {
                  resultHandler(rows);
@@ -256,7 +255,6 @@ class Item {
     static itemsCSV(filterClass, file, resultHandler ) {
         let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
         let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'Pkg Qty', 'Units On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.pkgQty, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
-        console.log(`sql: ${sql}`);
         pool.getConnection()
         .then( conn => { 
             conn.query(sql)
@@ -274,8 +272,9 @@ class Item {
         resultHandler(err);
     });
     }
-
 }
+
+
 
 module.exports = Item;
 

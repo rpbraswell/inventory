@@ -186,6 +186,23 @@ class Shipping {
         resultHandler(err);
     });
     }
+
+    static itemShippingReport( id, resultHandler ) {
+        let sql = "select DATE_FORMAT(shippedAt,'%Y') as 'Year', monthname(shippedAt) as 'Month', sum(qty) as 'Shippments' from shipping where itemId=? group by DATE_FORMAT(shippedAt,'%Y'), monthname(shippedAt) order by DATE_FORMAT(shippedAt,'%Y'), monthname(shippedAt) desc";
+        pool.getConnection()
+        .then( conn => {
+            conn.query(sql,[id])
+            .then( (res) => {
+                resultHandler(res);
+            })
+            .catch( (err) => {
+                resultHandler(err);
+            })
+            .finally( () => {
+                conn.end();
+            })
+        })
+    }
 }
 
 
