@@ -17,12 +17,8 @@ block content
                   option(value="", selected) -select-
                   each itemClass in itemClasses 
                         option(value=itemClass) #{itemClass}
-            li 
-               label(for="split") Split Package?
-               input#split(name="split" type="checkbox" disabled=item.pkgQty == 1 ? true : false)
-
             li
-               label(for="qty") Transfer Qty:
+               label(for="qty") Transfer #{item.itemClass} Qty:
                input#qty(type="number", name="qty", placeholder="required" required)
                input#id(type="number", hidden="true", name="id" value=item.id)
             li.button-group

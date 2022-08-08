@@ -5,7 +5,7 @@ var Item = require('../db/Item');
 var Category = require('../db/Category');
 var Unit = require('../db/Unit');
 var path = require('path');
-var Shipping = require('../db/shipping');
+var Shipping = require('../db/Shipping');
 
 /* GET items listing. */
 router.get('/', function(req, res, next) {

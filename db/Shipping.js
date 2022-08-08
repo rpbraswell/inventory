@@ -188,7 +188,7 @@ class Shipping {
     }
 
     static itemShippingReport( id, resultHandler ) {
-        let sql = "select DATE_FORMAT(shippedAt,'%Y') as 'Year', monthname(shippedAt) as 'Month', sum(qty) as 'Shippments' from shipping where itemId=? group by DATE_FORMAT(shippedAt,'%Y'), monthname(shippedAt) order by DATE_FORMAT(shippedAt,'%Y'), monthname(shippedAt) desc";
+        let sql = "select DATE_FORMAT(shippedAt,'%Y') as 'Year', monthname(shippedAt) as 'Month', sum(qty) as 'Shippments' from shipping where itemId=? group by DATE_FORMAT(shippedAt,'%Y'), monthname(shippedAt) order by DATE_FORMAT(shippedAt,'%Y'), monthname(shippedAt)";
         pool.getConnection()
         .then( conn => {
             conn.query(sql,[id])

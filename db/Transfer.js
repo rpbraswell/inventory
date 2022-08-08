@@ -12,74 +12,47 @@ class Transfer {
       this.transferredAt = transfer.transferredAt;
    }
 
-   static transferItem(item, qty, toClass, split, resultHandler) {
+   static transferItem(item, toItem, qty, resultHandler) {
                 pool.getConnection() 
                 .then( (conn) => {
                     conn.beginTransaction()
                     .then( () => {
                         console.log("---- beginning transaction ---");
-                        let splitQty = split ? qty * item.pkgQty : qty;
-                        let transfer = new Transfer({itemId: item.id,  toClass: toClass, qty: qty, split: split});
+                        let transfer = new Transfer({itemId: item.id,  toClass: toItem.itemClass, qty: qty, split: item.pkgQty > toItem.pkgQty ? true : false});
                         transfer.insert(conn, (trans) => {
                             if( trans instanceof Transfer ) {
                                 console.log("---- inserted Transfer record ---");
                                 item.qty -= qty;
                                 item.qty = item.qty < 0 ? 0 : item.qty;
-                                item.update(conn, (res) => {
-                                    if( res instanceof Item) {
-                                        console.log("--- looking up to item ---");
-                                        Item.findByNameAndClassAndType( item.name, toClass, item.itemType, (toItem) => {
-                                            if( toItem instanceof Item ) {
-                                                toItem.qty += splitQty;
-                                                toItem.update(conn, (res1) => {
-                                                    if( res1 instanceof Item ) {
-                                                        console.log('---committing transfer transaction---');
-                                                        conn.commit()
-                                                        .then( () => {
-                                                             console.log("--- successfully commited transaction ---");
-                                                             resultHandler(res1);
-                                                        })
-                                                        .catch( (err) => {
-                                                             resultHandler(err);
-                                                        })
-                                                     }
-                                                  })
-                                            } else {
-                                                console.log('--- did not find to item so inserting one---');
-                                                let newItem = new Item(item);
-                                                newItem.id = undefined;
-                                                newItem.qty = splitQty;
-                                                newItem.itemClass = toClass;
-                                                newItem.pkgQty = 1;
-                                                newItem.lastUpdate = undefined;
-                                                // console.log(newItem);
-                                                newItem.insert(conn, (toItem) => {
-                                                    if( toItem instanceof Item) {
-                                                        console.log('---committing new to item---');
-                                                        conn.commit()
-                                                        .then( () => {
-                                                             console.log("--- successfully commited transaction ---");
-                                                             resultHandler(toItem);
-                                                        })
-                                                        .catch( (err) => {
-                                                             resultHandler(err);
-                                                        });
-                                                    } else {
-                                                        console.log('--- rolling back transaction ---')
-                                                        conn.rollback();
-                                                        resultHandler(toItem);
-                                                    }
-                                                })
-                                            }
-                                        });  // Item.findByNameAndClassAndType
+                                item.update(conn, (resItem) => {
+                                    if( resItem instanceof Item) {
+                                       toItem.qty += Math.floor(item.pkgQty/toItem.pkgQty) * qty;
+                                       toItem.update(conn, (resToItem) => {
+                                           if( resToItem instanceof Item ) {
+                                               conn.commit();
+                                               resultHandler(resToItem);
+                                           } else {
+                                               conn.rollback();
+                                               resultHandler(resToItem);
+                                           }
+                                       }) //toItem.update
+                                    } else {
+                                        conn.rollback();
+                                        resultHandler(resItem);
                                     }
                                 });  // item.update
+                            } else {
+                                conn.rollback();
+                                resultHandler(trans);
                             }
                         })  // transfer.insert
                     }) // begin transaction
                     .catch( (err) => {
                         resultHandler(err);
-                    });
+                    })
+                    .finally( () => {
+                        conn.end();
+                    })
                 })  // get connnection
                 .catch( (err) => {
                     resultHandler(err);

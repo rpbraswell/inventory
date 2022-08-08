@@ -16,12 +16,12 @@ block content
     let span = document.getElementsByClassName("close")[0];
     span.onclick = function() {
       modal.style.display = "none";
-      window.location.href="http://#{hostname}:8080/items";
+      window.location.href="http://#{hostname}:8080/items?filter=all";
     }
     window.onclick = function(event) {
       if(event.target == modal ) {
         modal.style.display = "none";
-        window.location.href="http://#{hostname}:8080/items";
+        window.location.href="http://#{hostname}:8080/items?filter=all";
       }
     }
     

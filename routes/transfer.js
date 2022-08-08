@@ -44,18 +44,24 @@ router.get('/', (req, res, next) => {
      let id = Number(req.body.id);
      let qty = Number(req.body.qty);
      let toClass = req.body.toClass;
-     let split = req.body.split ? true : false;
-     console.log("id: ", id, "qty: ", qty, "toClass: ", toClass, "split: ", split);
+     console.log("id: ", id, "qty: ", qty, "toClass: ", toClass);
      Item.getItemById(id, (item) => {        
           if( item instanceof Item) {
-               Transfer.transferItem(item, qty, toClass, split, (result) => {
-                    if( result instanceof Item) {
-                         res.redirect("/items?filter=all");
+               Item.findByNameAndClassAndType(item.name, toClass, item.itemType, (toItem) => {
+                    if( toItem instanceof Item ) {
+                         Transfer.transferItem(item, toItem, qty, (result) => {
+                              if( result instanceof Item) {
+                                  res.redirect("/items?filter=all");
+                              } else {
+                                  let error = new Error(result.text);
+                                  res.render('error', {message: 'error transferring item: result is not an instance of Item', error: error, hostname: req.hostname});
+                              }
+                         });
                     } else {
-                         let error = new Error(result.text);
-                         res.render('error', {message: 'error transferring item: result is not an instance of Item', error: error, hostname: req.hostname});
+                         let error = new Error(`you must first define item '${item.name} ${toClass} ${item.itemType}' before you can transfer to it`);
+                         res.render('error', {message: 'item not found', error: error, hostname: req.hostname});
                     }
-               });
+               })
           } else {
                let error = new Error(item.text);
                res.render('error',{message: 'error transferring item: could not locate item to transfer', error: error, hostname: req.hostname} )
