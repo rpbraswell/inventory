@@ -17,41 +17,50 @@ class Transfer {
                 .then( (conn) => {
                     conn.beginTransaction()
                     .then( () => {
-                        console.log("---- beginning transaction ---");
+                        // console.log("---- beginning transaction ---");
                         let transfer = new Transfer({itemId: item.id,  toClass: toItem.itemClass, qty: qty, split: item.pkgQty > toItem.pkgQty ? true : false});
+                        // console.log('--- inserting transfer record ---');
                         transfer.insert(conn, (trans) => {
                             if( trans instanceof Transfer ) {
-                                console.log("---- inserted Transfer record ---");
+                                // console.log("---- inserted Transfer record ---");
                                 item.qty -= qty;
                                 item.qty = item.qty < 0 ? 0 : item.qty;
+                                // console.log('---- updating item ----');
                                 item.update(conn, (resItem) => {
                                     if( resItem instanceof Item) {
                                        toItem.qty += Math.floor(item.pkgQty/toItem.pkgQty) * qty;
+                                       // console.log('---- updating toItem ----');
                                        toItem.update(conn, (resToItem) => {
                                            if( resToItem instanceof Item ) {
                                                conn.commit();
+                                               conn.end();
                                                resultHandler(resToItem);
                                            } else {
+                                                console.log('---- rolling back transaction ---');
+                                                conn.end();
                                                conn.rollback();
                                                resultHandler(resToItem);
                                            }
                                        }) //toItem.update
                                     } else {
+                                        console.log('--- rolling back transaction ---');
                                         conn.rollback();
+                                        conn.end();
                                         resultHandler(resItem);
                                     }
                                 });  // item.update
                             } else {
+                                console.log('---- rolling back transaction (transfer insert) ---');
                                 conn.rollback();
+                                conn.end();
                                 resultHandler(trans);
                             }
                         })  // transfer.insert
                     }) // begin transaction
                     .catch( (err) => {
-                        resultHandler(err);
-                    })
-                    .finally( () => {
+                        console.log('---- error beginning transaction ----');
                         conn.end();
+                        resultHandler(err);
                     })
                 })  // get connnection
                 .catch( (err) => {
