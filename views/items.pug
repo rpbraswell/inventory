@@ -11,6 +11,7 @@ block content
                option(value="all", selected=filterClass == "all") all
                      each itemClass in itemClasses 
                         option(value=itemClass, selected=itemClass == filterClass) #{itemClass}
+           input(type="search" class="search" name="search" value=search placeholder="Search")
            input(class="refresh" type="submit" value="Refresh")
       button(onclick=`window.location.href='/items/report/csv?filter=${filterClass}'`) Download CSV
 

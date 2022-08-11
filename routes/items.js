@@ -10,11 +10,11 @@ var Shipping = require('../db/Shipping');
 /* GET items listing. */
 router.get('/', function(req, res, next) {
     let query = url.parse(req.url).query;
-    console.log(query);
-    let [filter, filterClass] = query.split("=");
+    let filter = req.query.filter ? req.query.filter : 'all';
+    let search = req.query.search ? req.query.search : '';
     Item.getClassValues( (itemClasses) => {
-        Item.getItems(filterClass, (rows) => {
-            res.render('items', {rows: rows, filterClass: filterClass, itemClasses: itemClasses});
+        Item.getItems(filter, search, (rows) => {
+            res.render('items', {rows: rows, filterClass: filter, search: search,  itemClasses: itemClasses});
         });
     })
 });

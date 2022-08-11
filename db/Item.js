@@ -157,11 +157,13 @@ class Item {
           });
    }
 
-   static getItems(filterClass, resultHandler ) {
+   static getItems(filterClass, _search, resultHandler ) {
       let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
+      let search = _search == '' ? '' : `and i.name regexp '${_search}'`;
       pool.getConnection()
       .then( conn => {
-            let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.pkgQty,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} order by i.name,i.itemClass,i.itemType`;
+            let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.pkgQty,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} ${search} order by i.name,i.itemClass,i.itemType`;
+            console.log(sql);
             conn.query( {rowsAsArray: true,  sql: sql } )
             .then( rows => {
                  resultHandler(rows);

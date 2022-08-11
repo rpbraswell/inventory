@@ -305,3 +305,16 @@ a {
 .shipping + .shipping {
   margin-top: 5px;
 }
+
+
+.search {
+  background-image: none;
+}
+
+.search:placeholder-shown {
+  background-image: url("/images/icons8-search.svg");
+  background-repeat: no-repeat;
+  background-position: right;
+  background-size: 1.2em, 1.2em;
+}
+
