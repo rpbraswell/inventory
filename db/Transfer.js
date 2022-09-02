@@ -25,12 +25,14 @@ class Transfer {
                                 // console.log("---- inserted Transfer record ---");
                                 item.qty -= qty;
                                 item.qty = item.qty < 0 ? 0 : item.qty;
-                                // console.log('---- updating item ----');
+                                console.log('---- updating item ----');
                                 item.update(conn, (resItem) => {
                                     if( resItem instanceof Item) {
-                                       toItem.qty += Math.floor(item.pkgQty/toItem.pkgQty) * qty;
-                                       // console.log('---- updating toItem ----');
-                                       toItem.update(conn, (resToItem) => {
+                                        console.log(`---- item.pkgQty: ${item.pkgQty}, toItem.pkgQty: ${toItem.pkgQty} toItem.qty: ${toItem.qty} ----`);
+                                        toItem.qty  += (item.pkgQty*qty)/toItem.pkgQty;
+                                        console.log('toItem.qty: ', toItem.qty);
+                                        console.log('---- updating toItem ----');
+                                        toItem.update(conn, (resToItem) => {
                                            if( resToItem instanceof Item ) {
                                                conn.commit();
                                                conn.end();
