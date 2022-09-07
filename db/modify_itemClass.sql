@@ -1,0 +1,1 @@
+alter table `items` modify `itemClass` enum('grocery','USDA','seniors','schools','thanksgiving') not null default 'grocery';
