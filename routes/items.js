@@ -147,7 +147,6 @@ router.post('/', (req, res, next) => {
         } else {
             operation = "inserting";
             item.isValid('insert', (status) => {
-                //console.log(JSON.stringify(status));
                 if( status.ok ) {
                     item.insert(undefined, (result) => {
                         if( result instanceof Item ) {

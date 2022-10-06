@@ -1,0 +1,30 @@
+extends layout
+
+block content
+
+  .report-heading
+     span Need To Order Report: 
+     form(class="form-horizontal" action="/reports/needToOrder", method="get") 
+           label(for="months") Months To Average
+           input#months( style='max-width: 50px; margin: 0 0 0 0; padding: 0 0 0 0;' value=months name="months" type="number") 
+           input(class="refresh" type="submit" value="Refresh")
+     div(class="vertical-bar")
+     button(onclick=`window.location.href='/reports/needToOrderCSV?months=${months}'`) Download CSV
+
+  div
+      table
+         thead
+             tr
+                th Name
+                th Class 
+                th Type
+                th On Hand
+                th Monthly Usage
+         tbody 
+            each row in rows
+              tr
+                td #{row.Name}
+                td #{row.Class}
+                td #{row.Type}
+                td #{row.OnHand}
+                td #{row.MonthlyUsage}

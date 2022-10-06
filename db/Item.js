@@ -37,7 +37,6 @@ class Item {
           if( this.id ) {
              messages.push("you cannot insert an item with an id");
           } else {
-             // console.log("id is null checking for duplicate name"); 
              Item.findByNameAndClassAndType(this.name, this.itemClass, this.itemType, (item) => {
                   if( item instanceof Item ) {
                      messages.push(`item with name '${this.name}' and type '${this.itemType}' and class '${this.itemClass}' already exists`);
@@ -163,7 +162,6 @@ class Item {
       pool.getConnection()
       .then( conn => {
             let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.pkgQty,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} ${search} order by i.name,i.itemClass,i.itemType`;
-            console.log(sql);
             conn.query( {rowsAsArray: true,  sql: sql } )
             .then( rows => {
                  resultHandler(rows);

@@ -85,7 +85,7 @@ router.get('/report', (req, res, next) => {
 router.get('/report/csv', (req, res, next) => {
      let query = url.parse(req.url).query;
      const [interval, days] = query.split("=");
-     console.log("qyery: ", query);
+     console.log("query: ", query);
 
      let reportDir = process.env.REPORT_DIRECTORY;
      let date = new Date();

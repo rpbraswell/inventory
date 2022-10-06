@@ -84,15 +84,12 @@ router.get('/report', (req, res, next) => {
 router.get('/report/csv', (req, res, next) => {
      let query = url.parse(req.url).query;
      const [interval, days] = query.split("=");
-     console.log("qyery: ", query);
 
      let reportDir = process.env.REPORT_DIRECTORY;
      let date = new Date();
      let reportName = `transfer_summary_report_${days}d_${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.csv`;
      let reportFile = path.join(reportDir, reportName);
      reportFile = reportFile.replace(/\\/g, '/')
-
-     console.log("reportFile: ",reportFile);
     
      Transfer.intervalTransferredCSV(days, reportFile, (result) => {
           if( result  == "success" ) {

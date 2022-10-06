@@ -163,7 +163,6 @@ class Transfer {
 
     static intervalTransferredCSV( days = 30, file, resultHandler ) {
         let sql = `(select 'Name', 'Class', 'Type', 'Unit', 'Units Transferred', 'Qty per Unit', 'To Class', 'Last Transfer') union (select i.name, i.itemClass, i.itemType, u.unit, sum(t.qty), i.pkgQty, t.toClass, DATE_FORMAT(max(t.transferredAt),"%M %d %Y %r")  from transfers t, items i, units u where t.itemId = i.id and u.id = i.unit and t.transferredAt > date_sub(current_date, interval ${days} day) group by t.itemId order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
-        console.log(`sql: ${sql}`);
         pool.getConnection()
         .then( conn => { 
             conn.query(sql)
