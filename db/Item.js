@@ -53,59 +53,57 @@ class Item {
 
    update(connection, resultHandler) {
       if( !connection ) {
-          // console.log("getting new connection");
           pool.getConnection()
           .then( newConnection => { 
-            this._update(newConnection, resultHandler, true);
+            this._update(newConnection, true, resultHandler);
           })
           .catch( (err) => {
-              resultHandler(err);
+              resultHandler(err, undefined);
           });
       } else {
-          this._update(connection, resultHandler, false);
+          this._update(connection, false, resultHandler);
       }
    }
 
-   _update(conn, resultHandler, endConnection) {
+   _update(conn, endConnection, resultHandler) {
           conn.query("update items set name = ?,  category = ?, unit = ?, pkgQty = ?, qty = ? where id = ?", [this.name, this.category, this.unit, this.pkgQty, this.qty, this.id]) 
           .then( res =>  {
-                resultHandler(this);
+                resultHandler(undefined, this);
           })
           .catch( (err) => {
-                throw err;
+                resultHandler(err, undefined);
           })
           .finally( () => {
-              endConnection && conn.end();
+              endConnection === true && conn.end();
           });
    }
 
     insert(connection, resultHandler) {
         if( !connection ) {
-            console.log("getting new connection");
             pool.getConnection()
             .then( newConnection => { 
-                this._insert(newConnection, resultHandler, true);
+                this._insert(newConnection, true, resultHandler);
             })
             .catch( (err) => {
-               resultHandler(err);
+               resultHandler(err, undefined);
             });
         } else {
-            this._insert(connection, resultHandler, false);
+            this._insert(connection, false, resultHandler);
         }
    }
 
-   _insert(conn, resultHandler, endConnection) {
+   _insert(conn, endConnection, resultHandler) {
           conn.query("insert into items (name, itemClass, itemType, category, unit, pkgQty, qty) values (?,?,?,?,?,?,?)", 
                  [this.name, this.itemClass, this.itemType, this.category, this.unit, this.pkgQty, this.qty])
           .then( (res) =>  {
                 this.id = res.insertId;
-                resultHandler(this);
+                resultHandler(undefined, this);
           })
           .catch( (err) => {
-                resultHandler(err);
+                resultHandler(err, undefined);
           })
           .finally( () => {
-              endConnection && conn.end();
+              endConnection === true && conn.end();
           });
    }
 
@@ -115,20 +113,20 @@ class Item {
               conn.query('select * from items where name = ? and itemClass = ? and itemType = ?', [name, itemClass, itemType] )
               .then( row => {
                   if( row.length == 0 ) {
-                      resultHandler( {} );
+                      resultHandler(undefined, null );
                   } else {
-                      resultHandler(new Item(row[0]));
+                      resultHandler(undefined, new Item(row[0]));
                   }
               })
               .catch( err => {
-                  resultHandler(err);
+                  resultHandler(err, undefined);
               })
               .finally( () => {
                   conn.end();
               });
           })
           .catch( err => {
-              resultHandler(err);
+              resultHandler(err, undefined);
           });
    }
 
@@ -138,72 +136,41 @@ class Item {
               conn.query('select * from items where id = ?', id)
               .then( row => {
                   if( row.length == 0 ) {
-                      resultHandler( {} );
+                      resultHandler(undefined, null );
                   } else {
-                      resultHandler(new Item(row[0]));
+                      resultHandler(undefined, new Item(row[0]));
                   }
               })
               .catch( err => {
-                    console.log('got error getting item by Id')
-                  resultHandler(err);
+                  resultHandler(err, undefined);
               })
               .finally( () => {
                   conn.end();
               });
           })
           .catch( err => {
-              resultHandler(err);
+              resultHandler(err, undefined);
           });
    }
 
-   static getItems(filterClass, _search, resultHandler ) {
-      let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
-      let search = _search == '' ? '' : `and i.name regexp '${_search}'`;
-      pool.getConnection()
-      .then( conn => {
-            let sql = `select i.id,i.name,i.itemClass,i.itemType,c.category,u.unit,i.pkgQty,i.qty,DATE_FORMAT(i.lastUpdate,"%M %d %Y %r") from items i, categories c, units u where i.category=c.id and i.unit=u.id ${filter} ${search} order by i.name,i.itemClass,i.itemType`;
-            conn.query( {rowsAsArray: true,  sql: sql } )
-            .then( rows => {
-                 resultHandler(rows);
-            })
-            .catch( (err) => {
-                 resultHandler(err);
-            })
-            .finally( () => {
-               conn.end();
-            });
-      })
-      .catch( (err) => {
-           resultHandler(err);
-      });
-   }
 
-   static getItemNames( resultHandler ) {
-        let itemNames = [];
-        Item.getItems( (items) => {
-            items.forEach( (item) => {
-               itemNames.push(item[0]);
-            });
-            resultHandler(itemNames);
-        })
-   }
-
+  
    static deleteItem(id, resultHandler ) {
       pool.getConnection()
       .then( conn => { 
           conn.query("delete from items where id = ?", Number(id))
-          .then( res =>  {
-                resultHandler(res);
+          .then( result =>  {
+                resultHandler(undefined, result);
           })
           .catch( (err) => {
-                resultHandler(err);
+                resultHandler(err, undefined);
           })
           .finally( () => {
                conn.end();
           });
       })
       .catch( (err) => {
-            resultHandler(err);
+            resultHandler(err, undefined);
        });
    }
 
@@ -217,19 +184,18 @@ class Item {
       pool.getConnection()
       .then( conn => { 
           conn.query("select column_type as 'enumValues' from information_schema.columns where table_schema = 'warehouse' and table_name = 'items' and column_name = 'itemType';")
-          .then( res =>  {
-              //console.log(res);
-              resultHandler(Item._parseEnumValues(res));
+          .then( types =>  {
+              resultHandler(undefined, Item._parseEnumValues(types));
           })
           .catch( (err) => {
-              resultHandler(err);
+              resultHandler(err, undefined);
           })
           .finally( () => {
              conn.end();
           });
       })
       .catch( (err) => {
-            resultHandler(err);
+            resultHandler(err, undefined);
        });
    }
 
@@ -237,41 +203,22 @@ class Item {
       pool.getConnection()
       .then( conn => { 
           conn.query("select column_type as 'enumValues' from information_schema.columns where table_schema = 'warehouse' and table_name = 'items' and column_name = 'itemClass';")
-          .then( res =>  {
-              resultHandler(Item._parseEnumValues(res));
+          .then( classes =>  {
+              resultHandler(undefined, Item._parseEnumValues(classes));
           })
           .catch( (err) => {
-              resultHandler(err);
+              resultHandler(err, undefined);
           })
           .finally( () => {
              conn.end();
           });
       })
       .catch( (err) => {
-          resultHandler(err);
+          resultHandler(err, undefined);
        });
     }
 
-    static itemsCSV(filterClass, file, resultHandler ) {
-        let filter = filterClass == "all" ? '' : `and i.itemClass = '${filterClass}'`;
-        let sql = `(select 'Name', 'Class', 'Type', 'Category', 'Unit', 'Pkg Qty', 'Units On Hand', 'Last Update') union (select i.name, i.itemClass, i.itemType, c.category, u.unit, i.pkgQty, i.qty, DATE_FORMAT(i.lastUpdate,"%M %d %Y %r")  from items i, categories c, units u where i.category=c.id and i.unit = u.id ${filter} order by i.name,i.itemClass,i.itemType) INTO OUTFILE '${file}' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED by '"' LINES TERMINATED BY '\n'`;
-        pool.getConnection()
-        .then( conn => { 
-            conn.query(sql)
-            .then( (res) => {
-                resultHandler("success");
-            })
-            .catch( (err) => {
-                resultHandler(err);
-            })
-            .finally( () => {
-                conn.end();
-        })
-     })
-    .catch( (err) => {
-        resultHandler(err);
-    });
-    }
+   
 }
 
 

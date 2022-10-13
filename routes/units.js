@@ -2,11 +2,14 @@ var express = require('express');
 var router = express.Router();
 var Unit = require('../db/Unit');
 
-/* GET categories listing. */
+/* GET units listing. */
 router.get('/', function(req, res, next) {
-   Unit.getUnits( (rows) => {
-       console.log(JSON.stringify(rows));
-       res.render('units', {rows: rows});
+   Unit.getUnits( (err, units) => {
+     if(err) {
+         res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
+     } else {
+         res.render('units', {rows: units});
+     }
    });
 });
 
@@ -16,19 +19,14 @@ router.get('/add', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    console.log(req.body.unit);
-    Unit.addUnit( { unit: req.body.unit}, (result) => {
-         if( result instanceof Unit ) {
-              // res.writeHead(200, {'Content-Type': 'text/html'});
-              // res.write(`<div align="center"><h2><p>successfully added unit ${req.body.unit}</p></h2></div>`);
-              // res.write(`<script>setTimeout(function() {window.location.href = "http://${req.hostname}:8080/units"; }, 2000);</script>`);
-              // res.end();
-              res.redirect("units");
-         } else { 
-              res.end(JSON.stringify(result));
-         }
-    });
-
+    let unit = new Unit(req.body);
+    unit.insert(undefined,  (err, unit) => {
+        if( err ) {
+            res.render('error', {message: 'error inserting new unit', error: err, hostname: req.hostname});
+        } else {
+            res.redirect("/units");
+        }
+    })
 });
 
 module.exports = router;

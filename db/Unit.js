@@ -3,50 +3,32 @@ let pool = require("./db.js");
 class Unit {
 
    constructor(_unit) {
-      this.id = _unit.id;
+      this.id = _unit.id ? Number(_unit.id) : undefined;
       this.unit = _unit.unit;
    }
 
-   updateOK() {
-       return this.id;
-   }
-
-   insertOK() {
-       return !this.id && typeof this.unit === 'string';
-   }
-
    insert(connection, resultHandler) {
-
-      if( !this.insertOK() ) {
-          resultHandler(new Error("validation failed for inserting item"));
-          return false;
-      }
-
-      console.log("unit validation successful for insertion");
       if( !connection ) {
-          console.log("getting new connection");
           pool.getConnection()
           .then( conn => { 
-             this._insert(conn, resultHandler, true);
+             this._insert(conn, true, resultHandler);
           })
           .catch( (err) => {
-              resultHandler(err);
+              resultHandler(err,undefined);
           });
       } else {
-         this._insert(conn, resultHandler, false);
+         this._insert(conn, false, resultHandler);
       }
    }
 
-   _insert(conn, resultHandler, endConnection) {
+   _insert(conn, endConnection, resultHandler) {
           conn.query("insert into units (unit) values (?)", [this.unit])
           .then( (res) =>  {
                 this.id = res.insertId;
-                console.log("got good result: " + res);
-                resultHandler(this);
+                resultHandler(undefined, this);
           })
           .catch( (err) => {
-                console.log("got error inserting item");
-                resultHandler(err);
+                resultHandler(err,undefined);
           })
           .finally( () => {
               if( endConnection === true ) {
@@ -61,10 +43,10 @@ class Unit {
             let sql = 'select id,unit from units order by unit';
             conn.query( {rowsAsArray: true,  sql: sql } )
             .then( rows => {
-                 resultHandler(rows);
+                 resultHandler(undefined, rows);
             })
             .catch( (err) => {
-                 resultHandler(err);
+                 resultHandler(err, undefined);
             })
             .finally( () => {
                conn.end();
@@ -73,13 +55,6 @@ class Unit {
       .catch( (err) => {
            resultHandler(err);
       });
-   }
-
-
-   static addUnit(_unit, resultHandler ) {
-        console.log(JSON.stringify(_unit));
-        let unit = new Unit(_unit);
-        unit.insert(undefined, resultHandler);
    }
 
 }

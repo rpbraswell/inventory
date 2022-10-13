@@ -5,7 +5,7 @@ block content
    .report-heading
       span Items: 
       a(href="/items/add") Add Item
-      form(class="form-horizontal" action="/items", method="get") 
+      form(class="form-horizontal" action="/reports/items", method="get") 
            label(for="filter") Filter 
            select#filter(name="filter") 
                option(value="all", selected=filterClass == "all") all
@@ -13,7 +13,7 @@ block content
                         option(value=itemClass, selected=itemClass == filterClass) #{itemClass}
            input(type="search" class="search" name="search" value=search placeholder="Search")
            input(class="refresh" type="submit" value="Refresh")
-      button(onclick=`window.location.href='/items/report/csv?filter=${filterClass}'`) Download CSV
+      button(onclick=`window.location.href='/reports/itemsCSV?filter=${filterClass}&search=${search}'`) Download CSV
 
    div
       table
@@ -30,25 +30,25 @@ block content
          tbody 
             each row in rows
                tr
-                  td #{row[1]}
-                  td #{row[2]}
-                  td #{row[3]}
-                  td #{row[4]}
-                  td #{row[5]}
-                  td #{row[6]}
-                  td #{row[7]}
-                  td #{row[8]}
+                  td #{row.Name}
+                  td #{row.ItemClass}
+                  td #{row.ItemType}
+                  td #{row.Category}
+                  td #{row.Unit}
+                  td #{row.PackageQty}
+                  td #{row.OnHand}
+                  td #{row.LastUpdate}
                   td 
-                     a(href=`/items/update?${row[0]}`) update
+                     a(href=`/items/update?id=${row.Id}`) update
                   td 
-                     a(href=`/items/delete?${row[0]}` onclick=`return confirm("Are you sure you want to permanently delete item ${row[1]}/${row[2]}/${row[3]} and associated shipping and receiving records from the database?")`) delete    
+                     a(href=`/items/delete?id=${row.Id}` onclick=`return confirm("Are you sure you want to permanently delete item ${row[1]}/${row[2]}/${row[3]} and associated shipping and receiving records from the database?")`) delete    
                   td 
-                     a(href=`/receive?${row[0]}`)  receive
+                     a(href=`/receive?id=${row.Id}`)  receive
                   td 
-                     a(href=`/ship?${row[0]}`)  ship
+                     a(href=`/ship?id=${row.Id}`)  ship
                   td 
-                     a(href=`/transfer?${row[0]}`) transfer
+                     a(href=`/transfer?id=${row.Id}`) transfer
                   td 
-                     a(href=`/items/reports?${row[0]}`) reports
+                     a(href=`/reports/itemShipments?id=${row.Id}`) shipments
    
    

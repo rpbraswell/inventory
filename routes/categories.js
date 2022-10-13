@@ -5,8 +5,12 @@ var Category = require('../db/Category');
 
 /* GET categories listing. */
 router.get('/', function(req, res, next) {
-   Category.getCategories( (rows) => {
-       res.render('categories', {rows: rows});
+   Category.getCategories( (err, categories) => {
+     if(err) {
+          res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
+     } else {
+        res.render('categories', {rows: categories});
+     }
    });
 });
 
@@ -17,13 +21,14 @@ router.get('/add', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    Category.addCategory( { category: req.body.category}, (result) => {
-         if( result instanceof Category ) {
-              res.redirect("categories");
-         } else { 
-              res.end(JSON.stringify(result));
-         }
-    });
+     let category = new Category(req.body);
+     category.insert( undefined, (err, category) => {
+          if( err ) {
+               res.render('error', {message: 'error inserting new category', error: err, hostname: req.hostname});
+          } else {
+               res.redirect("/categories");
+          }
+     })
 
 });
 

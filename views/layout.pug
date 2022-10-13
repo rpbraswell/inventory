@@ -14,12 +14,12 @@ html
           h1= "Warehouse Inventory"
 
           nav
-             button(onclick="window.location.href='/items?filter=all'") Items
+             button(onclick="window.location.href='/reports/items'") Items
              button(onclick="window.location.href='/categories'") Categories
              button(onclick="window.location.href='/units'") Units
-             button(onclick="window.location.href='/receive/report?interval=30'") Receiving Report
-             button(onclick="window.location.href='/ship/report?interval=30'") Shipping Report
-             button(onclick="window.location.href='/transfer/report?interval=30'") Transfer Report
+             button(onclick="window.location.href='/reports/receiving'") Receiving Report
+             button(onclick="window.location.href='/reports/shipping'") Shipping Report
+             button(onclick="window.location.href='/reports/transfer'") Transfer Report
              button(onclick="window.location.href='/reports/needToOrder'") Need To Order
      
     block content

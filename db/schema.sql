@@ -1,14 +1,14 @@
 use warehouse;
 
 create table if not exists `categories` (
-        `id` int unsigned not null auto_increment,
-	`category` varchar(80) character set utf8 collate utf8_unicode_ci not null,
+    `id` int unsigned not null auto_increment,
+	`category` varchar(80) character set utf8 collate utf8_unicode_ci not null unique,
 	primary key (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 default charset=utf8;
 
 create table if not exists `units` (
-        `id` int unsigned not null auto_increment,
-	`unit` varchar(80) character set utf8 collate utf8_unicode_ci not null,
+    `id` int unsigned not null auto_increment,
+	`unit` varchar(80) character set utf8 collate utf8_unicode_ci not null unique,
 	primary key (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 default charset=utf8;
 

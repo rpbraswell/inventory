@@ -4,7 +4,7 @@ block content
 
   .report-heading
      span Receiving Details Report: 
-     form(class="form-horizontal" action="/receive/report/details", method="get") 
+     form(class="form-horizontal" action="/reports/receivingDetails", method="get") 
            label(for="interval") Last 
            input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
            label Days
@@ -14,7 +14,7 @@ block content
                option(value="receivedAt", selected=sortField == "receivedAt") Received At
            input(class="refresh" type="submit" value="Refresh")
      div(class="vertical-bar")
-     button(onclick="window.location.href='/receive/report?interval=30'") Receiving Summary
+     button(onclick=`window.location.href='/reports/receiving?interval=${days}'`) Receiving Summary
 
   div
       table

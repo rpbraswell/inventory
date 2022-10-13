@@ -4,7 +4,7 @@ block content
 
   .report-heading
      span Transfer Details Report: 
-     form(class="form-horizontal" action="/transfer/report/details", method="get") 
+     form(class="form-horizontal" action="/reports/transferDetails", method="get") 
            label(for="interval") Last 
            input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
            label Days
@@ -14,7 +14,7 @@ block content
                option(value="transferredAt", selected=sortField == "transferredAt") Transferred At
            input(class="refresh" type="submit" value="Refresh")
      div(class="vertical-bar")
-     button(onclick="window.location.href='/transfer/report?interval=30'") Transfer Summary
+     button(onclick=`window.location.href='/reports/transfer?interval=${days}'`) Transfer Summary
 
   div
       table

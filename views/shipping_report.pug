@@ -4,14 +4,14 @@ block content
 
   .report-heading
      span Shipping Summary Report: 
-     form(class="form-horizontal" action="/ship/report", method="get") 
+     form(class="form-horizontal" action="/reports/shipping", method="get") 
            label(for="interval") Last 
            input#interval( style='max-width: 50px; margin: 0 0 0 0; padding: 0 0 0 0;' value=days name="interval" type="number") 
            label(style="margin-left: 0; padding: 0 0 0 0") Days
            input(class="refresh" type="submit" value="Refresh")
-     button(onclick=`window.location.href='/ship/report/csv?interval=${days}'`) Download CSV
+     button(onclick=`window.location.href='/reports/shippingCSV?interval=${days}'`) Download CSV
      div(class="vertical-bar")
-     button(class="report-details" onclick="window.location.href='/ship/report/details?interval=30&sort=name'") Shipping Details
+     button(class="report-details" onclick=`window.location.href='/reports/shippingDetails?interval=${days}&sort=name'`) Shipping Details
 
   div
       table

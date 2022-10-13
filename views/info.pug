@@ -2,17 +2,16 @@ extends layout
 
 block content
 
-  div(class="modal-container" id="errorContainer")
+  div(class="modal-container" id="infoContainer")
     div(class="modal-content")
-      div(class="modal-header modal-error")
+      div(class="modal-header modal-info")
         span(class="close") X
-        h2 Error
+        h2 Info
       div(class="modal-body")
         h2= message
-        h2= error.message
   
   script.
-    let modal = document.getElementById("errorContainer");
+    let modal = document.getElementById("infoContainer");
     let span = document.getElementsByClassName("close")[0];
     span.onclick = function() {
       modal.style.display = "none";

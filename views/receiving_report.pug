@@ -4,14 +4,14 @@ block content
 
   .report-heading
      span Receiving Report: 
-     form(class="form-horizontal" action="/receive/report", method="get") 
+     form(class="form-horizontal" action="/reports/receiving", method="get") 
          label(for="interval") Last 
          input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
          label Days
          input(class="refresh" type="submit" value="Refresh")
-     button(onclick=`window.location.href='/receive/report/csv?interval=${days}'`) Download CSV
+     button(onclick=`window.location.href='/reports/receivingCSV?interval=${days}'`) Download CSV
      div(class="vertical-bar")
-     button(class="report-details" onclick="window.location.href='/receive/report/details?interval=30&sort=name'") Receiving Details
+     button(class="report-details" onclick=`window.location.href='/reports/receivingDetails?interval=${days}&sort=name'`) Receiving Details
 
   div
       table

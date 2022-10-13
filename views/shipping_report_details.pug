@@ -4,7 +4,7 @@ block content
 
   .report-heading
      span Shipping Details Report: 
-     form(class="form-horizontal" action="/ship/report/details", method="get") 
+     form(class="form-horizontal" action="/reports/shippingDetails", method="get") 
            label(for="interval") Last 
            input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
            label Days
@@ -14,7 +14,7 @@ block content
                option(value="shippedAt", selected=sortField == "shippedAt") Shipped At
            input(class="refresh" type="submit" value="Refresh")
      div(class="vertical-bar")
-     button(onclick="window.location.href='/ship/report?interval=30'") Shipping Summary
+     button(onclick=`window.location.href='/reports/shipping?interval=${days}'`) Shipping Summary
 
   div
       table

@@ -1,146 +1,143 @@
 var express = require('express');
 var router = express.Router();
-var url  = require('url')
 var Item = require('../db/Item');
 var Category = require('../db/Category');
 var Unit = require('../db/Unit');
-var path = require('path');
 var Shipping = require('../db/Shipping');
+const itemsReport = require('../lib/reports/itemsReport.js');
 
-/* GET items listing. */
-router.get('/', function(req, res, next) {
-    let query = url.parse(req.url).query;
-    let filter = req.query.filter ? req.query.filter : 'all';
-    let search = req.query.search ? req.query.search : '';
-    Item.getClassValues( (itemClasses) => {
-        Item.getItems(filter, search, (rows) => {
-            res.render('items', {rows: rows, filterClass: filter, search: search,  itemClasses: itemClasses});
-        });
-    })
-});
 
-router.get('/report/csv', (req, res, next) => {
-    let query = url.parse(req.url).query;
-    let [filter, filterClass] = query.split("=");
-    let reportDir = process.env.REPORT_DIRECTORY;
-    let date = new Date();
-    let reportName = `item_report_${filterClass}_${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.csv`;
-    let reportFile = path.join(reportDir, reportName);
-    reportFile = reportFile.replace(/\\/g, '/')
-   
-    Item.itemsCSV(filterClass, reportFile, (result) => {
-         if( result  == "success" ) {
-              res.download(reportFile);
-         } else {
-              res.render('error', {message: 'error getting item csv report', error: result, hostname: req.hostname});
-         }
-    }); 
-});
+
 
 /* GET items listing for mobile app */
 router.get('/rest', function(req, res, next) {
-    try {
-        Item.getItems( (rows) => {
-            res.status(200).send(JSON.stringify(rows));
-        });
-    } catch(err) {
-        res.status(500).send(JSON.stringify(err));
-    }
+    itemsReport( (err, items) => {
+        if(err) {
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            res.status(200).send(JSON.stringify(items));
+        }
+    }); 
 });
 
 router.get('/add', (req, res, next) => {
-    try {
-      Category.getCategories( (categories) => {
-           Unit.getUnits( (units) => {
-               Item.getClassValues( (itemClasses) => {
-                   Item.getTypeValues( (itemTypes) => {
-                       res.render('item_form', {hostname: req.hostname, name: 'Add Item', itemClasses: itemClasses, itemTypes: itemTypes, categories: categories, units: units, item: {}, messages: [] });
-                    });
-                });
-           });
-      });
-    } catch(err) {
-        res.render('error', {message: `error getting information for adding new item`, error: err} );
-    }
-});
-
-router.get('/update', (req, res, next) => {
-    let query = url.parse(req.url).query;
-    let id = Number(query);
-    try {
-        Category.getCategories( (categories) => {
-            Unit.getUnits( (units) => {
-                Item.getClassValues( (itemClasses) => {
-                    Item.getTypeValues( (itemTypes) => {
-                        Item.getItemById(id,  (item) => {
-                            console.log(item);
-                            res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemClasses: itemClasses, itemTypes: itemTypes, item: item, categories: categories, units: units, messages: [] });
-                        });
-                    });
-                });
-            });
-        });
-    } catch(err) {
-        res.render('error', {message: `error getting information for item to update for id ${id}`, error: err} );
-    }
-});
-
-
-router.get('/delete', (req, res, next) => {
-    let query = url.parse(req.url).query;
-    let id = Number(query);
-    // if any kind of a result is returned then there was no error
-    Item.deleteItem(id, (result) => {
-        if( result.affectedRows == 1 ) {
-           res.redirect('/items?filter=all');
-        } else if(result.affectedRows === 0 ) {
-            let error = new Error("item does not exist");
-            console.log(error);
-            res.render('error', {message: `unable to delete item with id ${id}`, error: error, hostname: req.hostname} );
+      Category.getCategories( (err, categories) => {
+        if(err) {
+            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
         } else {
-            res.render('error', {message: `unable to delete item with id ${id}`, error: new Error(result.text), hostname: req.hostname} );
+           Unit.getUnits( (err, units) => {
+                if(err) {
+                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
+                } else {
+                    Item.getClassValues( (err, itemClasses) => {
+                        if(err) {
+                            res.render('error', {message: 'error getting item classes', error: err, hostname: req.hostname});
+                        } else {
+                            Item.getTypeValues( (err, itemTypes) => {
+                                if(err) {
+                                    res.render('error', {message: 'error getting item types', error: err, hostname: req.hostname});
+                                } else {
+                                    res.render('item_form', {hostname: req.hostname, name: 'Add Item', itemClasses: itemClasses, itemTypes: itemTypes, categories: categories, units: units, item: {}, messages: [] });
+                                }
+                            });
+                        }
+                    });
+                }
+           });
         }
     });
 });
 
-router.get('/reports', (req, res, next) => {
-    let query = url.parse(req.url).query;
-    let id = Number(query);
-    // if any kind of a result is returned then there was no error
-    Item.getItemById(id, (item) => {
-        Shipping.itemShippingReport(id, (report) => {
-            if(Array.isArray(report)) {
-                res.render('item_shipping_report', { item: item, rows: report})
-            } else {
-                res.render('error', {error: report})
-            }
-        });
+router.get('/update', (req, res, next) => {
+    let id = Number(req.query.id);
+    Category.getCategories( (err, categories) => {
+        if(err) {
+            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
+        } else {
+            Unit.getUnits( (err, units) => {
+                if(err) {
+                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
+                } else {
+                   Item.getClassValues( (err, itemClasses) => {
+                        if(err) {
+                            res.render('error', {message: 'error getting item classes', error: err, hostname: req.hostname});
+                        } else {
+                            Item.getTypeValues( (err, itemTypes) => {
+                                if(err) {
+                                    res.render('error', {message: 'error getting item types', error: err, hostname: req.hostname});
+                                } else {
+                                    Item.getItemById(id,  (err, item) => {
+                                        if(err) {
+                                            res.render('error', {message: 'error getting item to update', error: err, hostname: req.hostname});
+                                        } else {
+                                            res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemClasses: itemClasses, itemTypes: itemTypes, item: item, categories: categories, units: units, messages: [] });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
     });
 });
 
+
+router.get('/delete', (req, res, next) => {
+    let id = Number(req.query.id);
+    Item.deleteItem(id, (err, result) => {
+        if(err) {
+            res.render('error', {message: 'error deleting item', error: err, hostname: req.hostname}); 
+        } else if(result.affectedRows == 0 ) {
+            let error = new Error(`item does not exist for id ${id}`);
+            res.render('error', {message: `unable to delete item with id ${id}`, error: error, hostname: req.hostname} );
+        } else {
+           res.redirect('/items');
+        }
+    });
+});
+
+
 router.post('/', (req, res, next) => {
     let item = new Item(req.body);
-    console.log(item);
     let operation = "";
-    try {
         if( item.id ) {
             operation = "updating";
             item.isValid('update', (status) => {
                 if( status.ok ) {
-                    item.update(undefined, (result) => {
-                        if( result instanceof Item ) {
-                             res.redirect('/items?filter=all'); 
+                    item.update(undefined, (err, result) => {
+                        if( err ) {
+                            res.render('error', {message: 'error updating item', error: err, hostname: req.hostname});
+                        } else {
+                            res.redirect('/items'); 
                         }
                     });
                 } else {
-                    Category.getCategories( (categories) => {
-                        Unit.getUnits( (units) => {
-                            Item.getClassValues( (itemClasses) => {
-                                Item.getTypeValues( (itemTypes) => {
-                                   res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
-                                });
-                            });
+                    Category.getCategories( (err, categories) => {
+                        if(err) {
+                            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
+                        }  else {
+                             Unit.getUnits( (err, units) => {
+                                if(err) {
+                                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
+                                } else {
+                                    Item.getClassValues( (err, itemClasses) => {
+                                        if(err) {
+                                            res.render('error', {message: 'error getting item class values', error: err, hostname: req.hostname});
+                                        } else {
+                                            Item.getTypeValues( (err, itemTypes) => {
+                                                if(err) {
+                                                    res.render('error', {message: 'error getting item type values', error: err, hostname: req.hostname});
+                                                } else {
+                                                    res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                          });
+                        }
                       });
                   }
              });
@@ -148,30 +145,43 @@ router.post('/', (req, res, next) => {
             operation = "inserting";
             item.isValid('insert', (status) => {
                 if( status.ok ) {
-                    item.insert(undefined, (result) => {
-                        if( result instanceof Item ) {
-                            res.redirect("/items?filter=all");
+                    item.insert(undefined, (err, result) => {
+                        if( err ) {
+                            res.render('error', {message: 'error inserting item', error: err, hostname: req.hostname});
+                        } else {
+                            res.redirect("/items");
                         } 
                     });
                 } else {
-                    Category.getCategories( (categories) => {
-                        Unit.getUnits( (units) => {
-                            Item.getClassValues( (itemClasses) => {
-                                Item.getTypeValues( (itemTypes) => {
-                                    res.render('item_form', {hostname: req.hostname, name: 'Add Item',itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
-                                });
+                    Category.getCategories( (err, categories) => {
+                        if(err) {
+                            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
+                        } else {
+                             Unit.getUnits( (err, units) => {
+                                if(err) {
+                                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
+                                } else {
+                                     Item.getClassValues( (err, itemClasses) => {
+                                        if(err) {
+                                            res.render('error', {message: 'error getting item class values', error: err, hostname: req.hostname});
+                                        } else {
+                                             Item.getTypeValues( (err, itemTypes) => {
+                                                if(err) {
+                                                    res.render('error', {message: 'error getting item type values', error: err, hostname: req.hostname});
+                                                } else {
+                                                    res.render('item_form', {hostname: req.hostname, name: 'Add Item',itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                             });
-                        });
+                        }
                     });
                 }
             });
         }
-    } catch(err) { 
-        res.render('error', {message: `error ${operation} item`, error: err} );
-    }
 
 });
-
-
 
 module.exports = router;

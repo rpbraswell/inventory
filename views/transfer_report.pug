@@ -5,14 +5,14 @@ block content
   .report-heading
      span Transfer Report: 
      span 
-        form(class="form-horizontal" action="/transfer/report", method="get") 
+        form(class="form-horizontal" action="/reports/transfer", method="get") 
            label(for="interval") Last 
            input#interval( style='max-width: 50px;' value=days name="interval" type="number") 
            label Days
            input(class="refresh" type="submit" value="Refresh")
-     button(onclick=`window.location.href='/transfer/report/csv?interval=${days}'`) Download CSV
+     button(onclick=`window.location.href='/reports/transferCSV?interval=${days}'`) Download CSV
      div(class="vertical-bar")
-     button(class="report-details" onclick="window.location.href='/transfer/report/details?interval=30&sort=name'") Transfer Details
+     button(class="report-details" onclick=`window.location.href='/reports/transferDetails?interval=${days}&sort=name'`) Transfer Details
 
 
   div

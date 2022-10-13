@@ -268,8 +268,16 @@ a {
 
 .modal-header {
   padding: 2px 16px;
-  background-color: red;
+  
   color: white;
+}
+
+.modal-error {
+  background-color: red;
+}
+
+.modal-info {
+  background-color: green;
 }
 
 .modal-body {
