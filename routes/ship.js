@@ -54,7 +54,7 @@ router.post("/", (req, res, next) => {
                     if(err) {
                          res.render('error', {message: 'unable to ship item ${item.name} ${item.itemClass} ${item.itemType}', error: err, hostname: req.hostname});
                     } else {
-                         res.redirect("/items");
+                         res.redirect("/reports/items");
                     }
                });
           }

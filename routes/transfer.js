@@ -57,7 +57,7 @@ router.get('/', (req, res, next) => {
                               if(err) {
                                   res.render('error', {message: 'error transferring item', error: err, hostname: req.hostname});
                               } else {
-                                   res.redirect("/items");
+                                   res.redirect("/reports/items");
                               }
                          });
                     }

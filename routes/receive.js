@@ -54,7 +54,7 @@ router.post("/", (req, res, next) => {
                     if(err) {
                          res.render('error', {message: 'unable to receive item', error: err, hostname: req.hostname});
                     } else {
-                         res.redirect("/items");
+                         res.redirect("/reports/items");
                     }
                });
           }

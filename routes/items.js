@@ -93,7 +93,7 @@ router.get('/delete', (req, res, next) => {
             let error = new Error(`item does not exist for id ${id}`);
             res.render('error', {message: `unable to delete item with id ${id}`, error: error, hostname: req.hostname} );
         } else {
-           res.redirect('/items');
+           res.redirect('/reports/items');
         }
     });
 });
@@ -110,7 +110,7 @@ router.post('/', (req, res, next) => {
                         if( err ) {
                             res.render('error', {message: 'error updating item', error: err, hostname: req.hostname});
                         } else {
-                            res.redirect('/items'); 
+                            res.redirect('/reports/items'); 
                         }
                     });
                 } else {
@@ -149,7 +149,7 @@ router.post('/', (req, res, next) => {
                         if( err ) {
                             res.render('error', {message: 'error inserting item', error: err, hostname: req.hostname});
                         } else {
-                            res.redirect("/items");
+                            res.redirect("/reports/items");
                         } 
                     });
                 } else {
