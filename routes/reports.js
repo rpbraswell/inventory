@@ -9,12 +9,14 @@ const receivingReport = require('../lib/reports/receivingReport');
 const transferReport = require('../lib/reports/transferReport.js');
 const itemsReport = require('../lib/reports/itemsReport.js');
 
+let filterClass = 'all';
+
 router.get('/needToOrder', (req,res,next) => {
     let months = 2;
     if( req.query.months ) {
         months = Number(req.query.months);
     }
-    needToOrder(months, (err, report) => {
+    needToOrder(months, filterClass, (err, report) => {
         if( err) {
             res.render('error', {message: 'error getting Need To Order report', error: err, hostname: req.hostname});
         } else {
@@ -28,9 +30,9 @@ router.get('/needToOrderCSV', (req,res,next) => {
     if( req.query.months ) {
         months = Number(req.query.months);
     }
-    let rptFile = reportFile(`need_to_order_${months}_months`);
+    let rptFile = reportFile(`need_to_order_${months}_months_${filterClass}_items`);
 
-    needToOrder.csv(months, rptFile, (err, result) => {
+    needToOrder.csv(months, filterClass,  rptFile, (err, result) => {
        if( err ) {
           res.render('error', {message: 'error getting shipping summary csv report', error: err, hostname: req.hostname});
        } else if( result.nbrRows == 0 ) {  // csv file not generated
@@ -47,7 +49,7 @@ router.get('/needToOrderCSV', (req,res,next) => {
 
 router.get('/shipping', (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
-    shippingReport(days, (err, report) => {
+    shippingReport(days, filterClass, (err, report) => {
          if(err) {
               res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
          } else {
@@ -58,9 +60,9 @@ router.get('/shipping', (req, res, next) => {
 
 router.get('/shippingCSV', (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
-    let rptFile = reportFile(`shipping_summary_${days}_days`)
+    let rptFile = reportFile(`shipping_summary_${days}_days_${filterClass}_items`)
    
-    shippingReport.csv(days, rptFile, (err, result) => {
+    shippingReport.csv(days, filterClass, rptFile, (err, result) => {
          if(err) {
               res.render('error', {message: 'error getting shipping summary csv report', error: err, hostname: req.hostname});
          } else if(result.nbrRows == 0 ) {
@@ -74,7 +76,7 @@ router.get('/shippingCSV', (req, res, next) => {
 router.get('/shippingDetails', (req, res, next) => {
     const days = req.query.interval ? Number(req.query.interval) : 30;
     const sortField = req.query.sort? req.query.sort : "name";
-    shippingReport.details(days, sortField, (err, report) => {
+    shippingReport.details(days, sortField, filterClass, (err, report) => {
          if(err) {
               res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
          } else {
@@ -88,7 +90,7 @@ router.get('/shippingDetails', (req, res, next) => {
  */
 router.get('/receiving', (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
-    receivingReport(days, (err, report) => {      
+    receivingReport(days, filterClass, (err, report) => {      
          if(err) {
               res.render('error', {message: 'error getting receiving report', error: err, hostname: req.hostname});
          } else {
@@ -99,8 +101,8 @@ router.get('/receiving', (req, res, next) => {
 
 router.get('/receivingCSV', (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
-    let rptFile = reportFile(`receiving_summary_report_${days}_days`)
-    receivingReport.csv(days, rptFile, (err, result) => {
+    let rptFile = reportFile(`receiving_summary_report_${days}_days_${filterClass}_items`)
+    receivingReport.csv(days, filterClass, rptFile, (err, result) => {
          if( err ) {
               res.render('error', {message: 'error getting receiving summary csv report', error: err, hostname: req.hostname});
          } else if(result.nbrRows == 0 ) {
@@ -114,7 +116,7 @@ router.get('/receivingCSV', (req, res, next) => {
 router.get('/receivingDetails', (req, res, next) => {
     const days = req.query.interval ? Number(req.query.interval) : 30;
     const sortField = req.query.sort? req.query.sort : "name";
-    receivingReport.details(days, sortField, (err, report) => {
+    receivingReport.details(days, sortField, filterClass, (err, report) => {
          if( err ) {
               res.render('error', {message: 'error getting receiving report', error: err, hostname: req.hostname});         
          } else {
@@ -129,7 +131,7 @@ router.get('/receivingDetails', (req, res, next) => {
  */
 router.get('/transfer', (req, res, next) => {
      let days = req.query.interval ? Number(req.query.interval) : 30;
-     transferReport(days, (err, report) => {     
+     transferReport(days, filterClass, (err, report) => {     
           if(err) {
                res.render('error', { message: 'error getting transfer report', error: err, hostname: req.hostname});
           } else {
@@ -140,8 +142,8 @@ router.get('/transfer', (req, res, next) => {
 
 router.get('/transferCSV', (req, res, next) => {
      let days = req.query.interval ? Number(req.query.interval) : 30;
-     let rptFile = reportFile(`transfer_summary_report_${days}_days`)
-     transferReport.csv(days, rptFile, (err, result) => {
+     let rptFile = reportFile(`transfer_summary_report_${days}_days_${filterClass}_items`)
+     transferReport.csv(days, filterClass, rptFile, (err, result) => {
           if(err) {
                res.render('error', {message: 'error getting transfer summary csv report', error: err, hostname: req.hostname});
           } else if(result.nbrRows == 0 ) {
@@ -155,7 +157,7 @@ router.get('/transferCSV', (req, res, next) => {
 router.get('/transferDetails', (req, res, next) => {
      const days = req.query.interval ? Number(req.query.interval) : 30;
      const sortField = req.query.sort? req.query.sort : "name";
-     transferReport.details(days, sortField, (err, report) => {       
+     transferReport.details(days, sortField, filterClass, (err, report) => {       
           if(err) {
                res.render('error', {message: 'error getting transfer report', error: err, hostname: req.hostname});
           } else {
@@ -168,8 +170,9 @@ router.get('/transferDetails', (req, res, next) => {
  * Item reports
  */
 router.get('/items', function(req, res, next) {
-     let filter = req.query.filter ? req.query.filter : 'all';
+     let filter = req.query.filter ? req.query.filter : filterClass;
      let search = req.query.search ? req.query.search : '';
+     filterClass = filter;  //module scope
      Item.getClassValues( (err, itemClasses) => {
          if( err ) {
              res.render('error', {message: 'error getting item classes', error: err, hostname: req.hostname});
@@ -186,13 +189,13 @@ router.get('/items', function(req, res, next) {
  });
  
 router.get('/itemsCSV', (req, res, next) => {
-
-     let filterClass = req.query.filter ? req.query.filter : 'all';
+     let filter = req.query.filter ? req.query.filter : filterClass;
      let search = req.query.search ? req.query.search : '';
-     let rptFile = reportFile(`${filterClass}_items` + (search ? `_search_${search}` : ""));
+     let rptFile = reportFile(`${filter}_items` + (search ? `_search_${search}` : ""));
+     filterClass = filter;
      console.log(rptFile)
  
-     itemsReport.csv(filterClass, search, rptFile, (err, result) => {
+     itemsReport.csv(filter, search, rptFile, (err, result) => {
           if( err ) {
              res.render('error', {message: 'error getting items csv report', error: err, hostname: req.hostname});
           } else {

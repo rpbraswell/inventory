@@ -6,9 +6,6 @@ var Unit = require('../db/Unit');
 var Shipping = require('../db/Shipping');
 const itemsReport = require('../lib/reports/itemsReport.js');
 
-
-
-
 /* GET items listing for mobile app */
 router.get('/rest', function(req, res, next) {
     itemsReport( (err, items) => {
