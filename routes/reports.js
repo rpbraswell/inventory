@@ -1,224 +1,212 @@
 var express = require('express');
 var router = express.Router();
-var url  = require('url');
-const reportFile = require('../lib/utils/reportFile.js');
 
+const reportFile = require('../lib/utils/reportFile.js');
 const needToOrder = require('../lib/reports/needToOrder.js');
 const shippingReport = require('../lib/reports/shippingReport');
 const receivingReport = require('../lib/reports/receivingReport');
 const transferReport = require('../lib/reports/transferReport.js');
 const itemsReport = require('../lib/reports/itemsReport.js');
+const Item = require('../db/Item.js');
 
 let filterClass = 'all';
 
-router.get('/needToOrder', (req,res,next) => {
+router.get('/needToOrder', async (req,res,next) => {
     let months = 2;
     if( req.query.months ) {
         months = Number(req.query.months);
     }
-    needToOrder(months, filterClass, (err, report) => {
-        if( err) {
-            res.render('error', {message: 'error getting Need To Order report', error: err, hostname: req.hostname});
-        } else {
-            res.render('needToOrder_report', {months: months, rows: report})
-        }
-    })
+    try {
+          let report = await needToOrder(months, filterClass);
+          res.render('needToOrder_report', {months: months, rows: report})
+    } catch(err) {
+           res.render('error', {message: 'error getting Need To Order report', error: err, hostname: req.hostname});
+    }
 })
 
-router.get('/needToOrderCSV', (req,res,next) => {
+router.get('/needToOrderCSV', async (req,res,next) => {
     let months = 2;
     if( req.query.months ) {
         months = Number(req.query.months);
     }
     let rptFile = reportFile(`need_to_order_${months}_months_${filterClass}_items`);
+    try {
+           let result = await needToOrder.csv(months, filterClass,  rptFile);
+           if( result.ok ) {
+               res.download(rptFile);
+           } else {
+               res.render('info', {message: 'nothing to order', hostname: req.hostname});
+           }
 
-    needToOrder.csv(months, filterClass,  rptFile, (err, result) => {
-       if( err ) {
+    } catch(err) {
           res.render('error', {message: 'error getting shipping summary csv report', error: err, hostname: req.hostname});
-       } else if( result.nbrRows == 0 ) {  // csv file not generated
-          res.render('info', {message: 'nothing to order', hostname: req.hostname});
-       } else {
-          res.download(rptFile);
-       }
-    })
+    }
 })
 
 /*
  * Shipping Reports
  */
 
-router.get('/shipping', (req, res, next) => {
+router.get('/shipping', async (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
-    shippingReport(days, filterClass, (err, report) => {
-         if(err) {
-              res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
-         } else {
-              res.render('shipping_report', {days: days, rows: report})
-         }
-    }); 
+    try {
+          let report = await shippingReport(days, filterClass);
+          res.render('shipping_report', {days: days, rows: report})
+    } catch(err) {
+          res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
+
+    }
 });
 
-router.get('/shippingCSV', (req, res, next) => {
+router.get('/shippingCSV', async (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
     let rptFile = reportFile(`shipping_summary_${days}_days_${filterClass}_items`)
-   
-    shippingReport.csv(days, filterClass, rptFile, (err, result) => {
-         if(err) {
-              res.render('error', {message: 'error getting shipping summary csv report', error: err, hostname: req.hostname});
-         } else if(result.nbrRows == 0 ) {
-            res.render('info', {message: `no shipping to report in the last ${days} days`, hostname: req.hostname});
-         } else {
-              res.download(rptFile);
-         }
-    }); 
+    try {
+          let result = await shippingReport.csv(days, filterClass, rptFile);
+          if( result.ok ) {
+               res.download(rptFile);
+           } else {
+               res.render('info', {message: 'no shipping records are available', hostname: req.hostname});
+           }
+    } catch(err) {
+          res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
+    }
 });
 
-router.get('/shippingDetails', (req, res, next) => {
+router.get('/shippingDetails', async (req, res, next) => {
     const days = req.query.interval ? Number(req.query.interval) : 30;
     const sortField = req.query.sort? req.query.sort : "name";
-    shippingReport.details(days, sortField, filterClass, (err, report) => {
-         if(err) {
-              res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
-         } else {
-              res.render('shipping_report_details', {days: days, rows: report, sortField: sortField})
-         }
-    }); 
+    try {
+          let report = await shippingReport.details(days, sortField, filterClass);
+          res.render('shipping_report_details', {days: days, rows: report, sortField: sortField})
+    } catch(err) {
+          res.render('error', {message: 'error getting shippping report', error: err, hostname: req.hostname});
+    }
 });
 
 /*
  *  receiving reports
  */
-router.get('/receiving', (req, res, next) => {
+router.get('/receiving', async (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
-    receivingReport(days, filterClass, (err, report) => {      
-         if(err) {
-              res.render('error', {message: 'error getting receiving report', error: err, hostname: req.hostname});
-         } else {
-              res.render('receiving_report', {days: days, rows: report})
-         }
-    }); 
+    try {
+          let report = await receivingReport(days,filterClass);
+          res.render('receiving_report', {days: days, rows: report})
+    } catch(err) {
+          res.render('error', {message: 'error getting receiving report', error: err, hostname: req.hostname});
+    }
 });
 
-router.get('/receivingCSV', (req, res, next) => {
+router.get('/receivingCSV', async (req, res, next) => {
     let days = req.query.interval ? Number(req.query.interval) : 30;
     let rptFile = reportFile(`receiving_summary_report_${days}_days_${filterClass}_items`)
-    receivingReport.csv(days, filterClass, rptFile, (err, result) => {
-         if( err ) {
-              res.render('error', {message: 'error getting receiving summary csv report', error: err, hostname: req.hostname});
-         } else if(result.nbrRows == 0 ) {
-              res.render('info', {message: `no receiving to report in the last ${days} days`, hostname: req.hostname});
-         } else {
-              res.download(rptFile);
-         }
-    }); 
+    try {
+          let result = await receivingReport.csv(days,filterClass,rptFile);
+          if( result.ok ) {
+               res.download(rptFile);
+           } else {
+               res.render('info', {message: 'no shipping records are available', hostname: req.hostname});
+           }
+    } catch(err) {
+          res.render('error', {message: 'error getting receiving summary csv report', error: err, hostname: req.hostname});
+    }
 });
 
-router.get('/receivingDetails', (req, res, next) => {
+router.get('/receivingDetails', async (req, res, next) => {
     const days = req.query.interval ? Number(req.query.interval) : 30;
     const sortField = req.query.sort? req.query.sort : "name";
-    receivingReport.details(days, sortField, filterClass, (err, report) => {
-         if( err ) {
-              res.render('error', {message: 'error getting receiving report', error: err, hostname: req.hostname});         
-         } else {
-              res.render('receiving_report_details', {days: days, rows: report, sortField: sortField})        
-         }
-    }); 
+    try {
+          let report = await receivingReport.details(days, sortField, filterClass);
+          res.render('receiving_report_details', {days: days, rows: report, sortField: sortField})        
+    } catch(err) {
+           res.render('error', {message: 'error getting receiving report', error: err, hostname: req.hostname});         
+    }
 });
 
 
 /*
  * Transfer reports
  */
-router.get('/transfer', (req, res, next) => {
+router.get('/transfer', async (req, res, next) => {
      let days = req.query.interval ? Number(req.query.interval) : 30;
-     transferReport(days, filterClass, (err, report) => {     
-          if(err) {
-               res.render('error', { message: 'error getting transfer report', error: err, hostname: req.hostname});
-          } else {
-               res.render('transfer_report', {days: days, rows: report});
-          }
-     }); 
+     try {
+          let report = await transferReport(days, filterClass);
+          res.render('transfer_report', {days: days, rows: report});
+     } catch(err) {
+          res.render('error', { message: 'error getting transfer report', error: err, hostname: req.hostname});
+     }
 });
 
-router.get('/transferCSV', (req, res, next) => {
+router.get('/transferCSV', async (req, res, next) => {
      let days = req.query.interval ? Number(req.query.interval) : 30;
      let rptFile = reportFile(`transfer_summary_report_${days}_days_${filterClass}_items`)
-     transferReport.csv(days, filterClass, rptFile, (err, result) => {
-          if(err) {
-               res.render('error', {message: 'error getting transfer summary csv report', error: err, hostname: req.hostname});
-          } else if(result.nbrRows == 0 ) {
-               res.render('info', {message: `no transfers to report in the last ${days} days`, hostname: req.hostname});
-          } else {
+     try {
+          let result = await transferReport.csv(days, filterClass, rptFile);
+          if( result.ok ) {
                res.download(rptFile);
-          }
-     }); 
+           } else {
+               res.render('info', {message: 'no trasnfer records are available', hostname: req.hostname});
+           }
+     } catch(err) {
+          res.render('error', {message: 'error getting transfer summary csv report', error: err, hostname: req.hostname});
+     }
 });
 
-router.get('/transferDetails', (req, res, next) => {
+router.get('/transferDetails', async (req, res, next) => {
      const days = req.query.interval ? Number(req.query.interval) : 30;
      const sortField = req.query.sort? req.query.sort : "name";
-     transferReport.details(days, sortField, filterClass, (err, report) => {       
-          if(err) {
-               res.render('error', {message: 'error getting transfer report', error: err, hostname: req.hostname});
-          } else {
-               res.render('transfer_report_details', {days: days, rows: report, sortField: sortField})
-          }
-     }); 
+     try {
+          let report = await transferReport.details(days, sortField, filterClass);
+          res.render('transfer_report_details', {days: days, rows: report, sortField: sortField})
+     } catch(err) {
+          res.render('error', {message: 'error getting transfer report', error: err, hostname: req.hostname});
+     }
 });
 
 /* 
  * Item reports
  */
-router.get('/items', function(req, res, next) {
+router.get('/items', async function(req, res, next) {
      let filter = req.query.filter ? req.query.filter : filterClass;
      let search = req.query.search ? req.query.search : '';
      filterClass = filter;  //module scope
-     Item.getClassValues( (err, itemClasses) => {
-         if( err ) {
-             res.render('error', {message: 'error getting item classes', error: err, hostname: req.hostname});
-         } else {
-             itemsReport(filter, search, (err, items) => {
-                 if(err) {
-                     res.render('error', {message: 'error getting items', error: err, hostname: req.hostname});
-                 } else {
-                     res.render('items', {rows: items, filterClass: filter, search: search,  itemClasses: itemClasses});
-                 }
-             });
-         }
+     let itemClassesPromise = Item.getClassValues();
+     let itemsPromise = itemsReport(filter,search);
+     Promise.all([itemClassesPromise, itemsPromise])
+     .then( ([itemClasses, items]) => {
+          res.render('items', {rows: items, filterClass: filter, search: search,  itemClasses: itemClasses});
+     })
+     .catch( (err) => {
+          res.render('error', {message: 'error getting items', error: err, hostname: req.hostname});
      })
  });
  
-router.get('/itemsCSV', (req, res, next) => {
+router.get('/itemsCSV', async (req, res, next) => {
      let filter = req.query.filter ? req.query.filter : filterClass;
      let search = req.query.search ? req.query.search : '';
      let rptFile = reportFile(`${filter}_items` + (search ? `_search_${search}` : ""));
      filterClass = filter;
-     console.log(rptFile)
- 
-     itemsReport.csv(filter, search, rptFile, (err, result) => {
-          if( err ) {
-             res.render('error', {message: 'error getting items csv report', error: err, hostname: req.hostname});
+     try {
+          let result = await itemsReport.csv(filter,search,rptFile);
+          if( result.ok ) {
+               res.download(rptFile);
           } else {
-             res.download(rptFile);
+               res.render('info', {message: `no items to report`, hostname: req.hostname});
           }
-     }); 
+     } catch (err) {
+          res.render('error', {message: 'error getting items csv report', error: err, hostname: req.hostname});
+     }
  });
 
- router.get('/itemShipments', (req, res, next) => {
-     let id = Number(req.query.id);
-     Item.getItemById(id, (err, item) => {
-         if(err) {
-             res.render('error', {message: 'error getting item', error: err, hostname: req.hostname}); 
-         } else {
-             itemsReport.itemShipments(id, (err, report) => {
-                 if(err) {
-                     res.render('error', {message: 'error getting shipping report', error: err, hostname: req.hostname}); 
-                 } else {
-                     res.render('item_shipping_report', { item: item, rows: report})
-                 }
-             });
-         }
-     });
+ router.get('/itemShipments', async (req, res, next) => {
+    let id = Number(req.query.id);
+    try {
+        let item = await Item.getItemById(id);
+        let report = await itemsReport.itemShipments(id);
+        res.render('item_shipping_report', { item: item, rows: report})
+    } catch(err) {
+        res.render('error', {message: 'error getting shipping report', error: err, hostname: req.hostname}); 
+    }
  });
  
 module.exports = router

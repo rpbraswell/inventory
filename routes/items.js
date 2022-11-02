@@ -3,182 +3,89 @@ var router = express.Router();
 var Item = require('../db/Item');
 var Category = require('../db/Category');
 var Unit = require('../db/Unit');
-var Shipping = require('../db/Shipping');
-const itemsReport = require('../lib/reports/itemsReport.js');
-
-/* GET items listing for mobile app */
-router.get('/rest', function(req, res, next) {
-    itemsReport( (err, items) => {
-        if(err) {
-            res.status(500).send(JSON.stringify(err));
-        } else {
-            res.status(200).send(JSON.stringify(items));
-        }
-    }); 
-});
 
 router.get('/add', (req, res, next) => {
-      Category.getCategories( (err, categories) => {
-        if(err) {
-            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
-        } else {
-           Unit.getUnits( (err, units) => {
-                if(err) {
-                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
-                } else {
-                    Item.getClassValues( (err, itemClasses) => {
-                        if(err) {
-                            res.render('error', {message: 'error getting item classes', error: err, hostname: req.hostname});
-                        } else {
-                            Item.getTypeValues( (err, itemTypes) => {
-                                if(err) {
-                                    res.render('error', {message: 'error getting item types', error: err, hostname: req.hostname});
-                                } else {
-                                    res.render('item_form', {hostname: req.hostname, name: 'Add Item', itemClasses: itemClasses, itemTypes: itemTypes, categories: categories, units: units, item: {}, messages: [] });
-                                }
-                            });
-                        }
-                    });
-                }
-           });
-        }
-    });
+    let categoriesPromise = Category.getCategories();
+    let unitsPromise = Unit.getUnits();
+    let classValuesPromise = Item.getClassValues();
+    let typeValuesPromise = Item.getTypeValues();
+    Promise.all([categoriesPromise, unitsPromise, classValuesPromise, typeValuesPromise])
+    .then( ([categories, units, classValues, typeValues]) => {
+        res.render('item_form', {hostname: req.hostname, name: 'Add Item', itemClasses: classValues, itemTypes: typeValues, categories: categories, units: units, item: {}, messages: [] });
+    })
+    .catch( (err) => {
+        res.render('error', {message: 'error getting data for adding item', error: err, hostname: req.hostname});      
+    })
 });
 
 router.get('/update', (req, res, next) => {
     let id = Number(req.query.id);
-    Category.getCategories( (err, categories) => {
-        if(err) {
-            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
-        } else {
-            Unit.getUnits( (err, units) => {
-                if(err) {
-                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
-                } else {
-                   Item.getClassValues( (err, itemClasses) => {
-                        if(err) {
-                            res.render('error', {message: 'error getting item classes', error: err, hostname: req.hostname});
-                        } else {
-                            Item.getTypeValues( (err, itemTypes) => {
-                                if(err) {
-                                    res.render('error', {message: 'error getting item types', error: err, hostname: req.hostname});
-                                } else {
-                                    Item.getItemById(id,  (err, item) => {
-                                        if(err) {
-                                            res.render('error', {message: 'error getting item to update', error: err, hostname: req.hostname});
-                                        } else {
-                                            res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemClasses: itemClasses, itemTypes: itemTypes, item: item, categories: categories, units: units, messages: [] });
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
+    let categoriesPromise = Category.getCategories();
+    let unitsPromise = Unit.getUnits();
+    let classValuesPromise = Item.getClassValues();
+    let typeValuesPromise = Item.getTypeValues();
+    let itemPromise = Item.getItemById(id);
+    Promise.all([categoriesPromise, unitsPromise, classValuesPromise, typeValuesPromise, itemPromise])
+    .then( ([categories, units, classValues, typeValues, item]) => {
+        res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemClasses: classValues, itemTypes: typeValues, item: item, categories: categories, units: units, messages: [] });
+    })
+    .catch( (err) => {
+        res.render('error', {message: 'error getting data for updating item', error: err, hostname: req.hostname});
+    })
 });
 
 
 router.get('/delete', (req, res, next) => {
     let id = Number(req.query.id);
-    Item.deleteItem(id, (err, result) => {
-        if(err) {
-            res.render('error', {message: 'error deleting item', error: err, hostname: req.hostname}); 
-        } else if(result.affectedRows == 0 ) {
-            let error = new Error(`item does not exist for id ${id}`);
-            res.render('error', {message: `unable to delete item with id ${id}`, error: error, hostname: req.hostname} );
-        } else {
-           res.redirect('/reports/items');
-        }
-    });
+    Item.deleteItem(id)
+    .then( (result) => {
+        res.redirect('/reports/items');
+    })
+    .catch( (err) => {
+        res.render('error', {message: 'error deleting item', error: err, hostname: req.hostname}); 
+    })
 });
 
 
 router.post('/', (req, res, next) => {
     let item = new Item(req.body);
-    let operation = "";
-        if( item.id ) {
-            operation = "updating";
-            item.isValid('update', (status) => {
-                if( status.ok ) {
-                    item.update(undefined, (err, result) => {
-                        if( err ) {
-                            res.render('error', {message: 'error updating item', error: err, hostname: req.hostname});
-                        } else {
-                            res.redirect('/reports/items'); 
-                        }
-                    });
-                } else {
-                    Category.getCategories( (err, categories) => {
-                        if(err) {
-                            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
-                        }  else {
-                             Unit.getUnits( (err, units) => {
-                                if(err) {
-                                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
-                                } else {
-                                    Item.getClassValues( (err, itemClasses) => {
-                                        if(err) {
-                                            res.render('error', {message: 'error getting item class values', error: err, hostname: req.hostname});
-                                        } else {
-                                            Item.getTypeValues( (err, itemTypes) => {
-                                                if(err) {
-                                                    res.render('error', {message: 'error getting item type values', error: err, hostname: req.hostname});
-                                                } else {
-                                                    res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                         });
-                        }
-                      });
-                  }
-             });
-        } else {
-            operation = "inserting";
-            item.isValid('insert', (status) => {
-                if( status.ok ) {
-                    item.insert(undefined, (err, result) => {
-                        if( err ) {
-                            res.render('error', {message: 'error inserting item', error: err, hostname: req.hostname});
-                        } else {
-                            res.redirect("/reports/items");
-                        } 
-                    });
-                } else {
-                    Category.getCategories( (err, categories) => {
-                        if(err) {
-                            res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
-                        } else {
-                             Unit.getUnits( (err, units) => {
-                                if(err) {
-                                    res.render('error', {message: 'error getting units', error: err, hostname: req.hostname});
-                                } else {
-                                     Item.getClassValues( (err, itemClasses) => {
-                                        if(err) {
-                                            res.render('error', {message: 'error getting item class values', error: err, hostname: req.hostname});
-                                        } else {
-                                             Item.getTypeValues( (err, itemTypes) => {
-                                                if(err) {
-                                                    res.render('error', {message: 'error getting item type values', error: err, hostname: req.hostname});
-                                                } else {
-                                                    res.render('item_form', {hostname: req.hostname, name: 'Add Item',itemTypes: itemTypes, itemClasses: itemClasses, categories: categories, units: units, item: item, messages: status.messages});
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
+    if( item.id ) {
+        item.update()
+        .then( (_) => {
+            res.redirect('/reports/items'); 
+        })
+        .catch( (err) => {
+            let categoriesPromise = Category.getCategories();
+            let unitsPromise = Unit.getUnits();
+            let classValuesPromise = Item.getClassValues();
+            let typeValuesPromise = Item.getTypeValues();
+            Promise.all([categoriesPromise, unitsPromise, classValuesPromise, typeValuesPromise])
+            .then( ([categories, units, classValues, typeValues]) => {
+                res.render('item_update_form', {hostname: req.hostname, name: `Update ${item.itemClass} ${item.itemType} ${item.name}`, itemTypes: typeValues, itemClasses: classValues, categories: categories, units: units, item: item, messages: err.messages});
+            })
+            .catch( (err) => {
+                res.render('error', {message: 'error getting data to update item', error: err, hostname: req.hostname});           
+            })
+        })
+    } else {
+        item.insert()
+        .then( (_) => {
+            res.redirect("/reports/items");
+        })
+        .catch( (err) => {
+            let categoriesPromise = Category.getCategories();
+            let unitsPromise = Unit.getUnits();
+            let classValuesPromise = Item.getClassValues();
+            let typeValuesPromise = Item.getTypeValues();
+            Promise.all([categoriesPromise, unitsPromise, classValuesPromise, typeValuesPromise])
+            .then( ([categories, units, classValues, typeValues]) => {
+                res.render('item_form', {hostname: req.hostname, name: 'Add Item',itemTypes: typeValues, itemClasses: classValues, categories: categories, units: units, item: item, messages: err.messages});
+            })
+            .catch( (err) => {
+                res.render('error', {message: 'error getting item type values', error: err, hostname: req.hostname});        
+            })
+        }) 
+    }
 });
 
 module.exports = router;

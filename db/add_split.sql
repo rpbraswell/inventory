@@ -1,1 +1,0 @@
-alter table `transfers` add `split` boolean not null default false after `qty`;

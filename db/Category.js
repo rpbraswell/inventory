@@ -2,62 +2,28 @@ let pool = require("./db.js");
 
 class Category {
 
-   constructor(_category) {
-      this.id = _category.id ? Number(_category.id) : undefined;
-      this.category = _category.category;
-   }
+    constructor(_category) {
+        this.id = _category.id ? Number(_category.id) : undefined;
+        this.category = _category.category;
+    }
 
+    async insert(connection) {
+        if(this.id) {
+            return Promise.reject('error: cannot insert a category with an id');
+        }
+        let conn = connection;
+        if( !connection ) {
+            conn = await pool.getConnection();
+        }
+        let result = await conn.query("insert into categories (category) values (?)", [this.category]).finally( () => connection || conn.end());
+        this.id = result.insertId;
+        return Promise.resolve('success: 1 category inserted');
+    }
 
-   insert(connection, resultHandler) {
-      if( !connection ) {
-          pool.getConnection()
-          .then( conn => { 
-             this._insert(conn, true, resultHandler);
-          })
-          .catch( (err) => {
-              resultHandler(err, undefined);
-          });
-      } else {
-         this._insert(conn, false, resultHandler);
-      }
-   }
-
-   _insert(conn, endConnection, resultHandler) {
-          conn.query("insert into categories (category) values (?)", [this.category])
-          .then( (res) =>  {
-                this.id = res.insertId;
-                resultHandler(undefined, this);
-          })
-          .catch( (err) => {
-                resultHandler(err, undefined);
-          })
-          .finally( () => {
-              if( endConnection === true ) {
-                  conn.end();
-              }
-          });
-   }
-
-   static getCategories( resultHandler ) {
-      pool.getConnection()
-      .then( conn => {
-            let sql = 'select id,category from categories order by category';
-            conn.query( {rowsAsArray: true,  sql: sql } )
-            .then( rows => {
-                 resultHandler(undefined, rows);
-            })
-            .catch( (err) => {
-                 resultHandler(err, undefined);
-            })
-            .finally( () => {
-               conn.end();
-            });
-      })
-      .catch( (err) => {
-           resultHandler(err);
-      });
-   }
-
+    static async getCategories() {
+        let sql = 'select id,category from categories order by category';
+        return pool.query( {rowsAsArray: true,  sql: sql } );
+    }
 }
 
 module.exports = Category;

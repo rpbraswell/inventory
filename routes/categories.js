@@ -4,14 +4,13 @@ var Category = require('../db/Category');
 
 
 /* GET categories listing. */
-router.get('/', function(req, res, next) {
-   Category.getCategories( (err, categories) => {
-     if(err) {
+router.get('/', async function(req, res, next) {
+     try {
+          let categories = await Category.getCategories();
+          res.render('categories', {rows: categories});
+     } catch(err) {
           res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
-     } else {
-        res.render('categories', {rows: categories});
      }
-   });
 });
 
 
@@ -20,15 +19,14 @@ router.get('/add', (req, res, next) => {
      res.render('category_form', {name: 'Add Category' });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
      let category = new Category(req.body);
-     category.insert( undefined, (err, category) => {
-          if( err ) {
-               res.render('error', {message: 'error inserting new category', error: err, hostname: req.hostname});
-          } else {
-               res.redirect("/categories");
-          }
-     })
+     try {
+          await category.insert();
+          res.redirect("/categories");
+     } catch(err) {
+          res.render('error', {message: 'error inserting new category', error: err, hostname: req.hostname});
+     }
 
 });
 
