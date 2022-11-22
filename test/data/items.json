@@ -1,0 +1,17 @@
+[
+    ["carrots", "grocery", "dry", "vegetable", "can", 1, 10],
+    ["corn", "grocery", "dry", "vegetable", "can", 1, 10],
+    ["green beans", "grocery", "dry", "vegetable", "can", 1, 10],
+    ["tomatoes", "grocery", "dry", "vegetable", "can", 1, 10],
+    ["potatoes", "grocery", "dry", "vegetable", "can", 1, 10],
+    ["beets", "grocery", "dry", "vegetable", "can", 1, 10],
+    ["apple sauce", "grocery", "dry", "fruit", "can", 6, 10],
+
+    ["carrots", "seniors", "dry", "vegetable", "can", 1, 10],
+    ["corn", "seniors", "dry", "vegetable", "can", 1, 10],
+    ["green beans", "seniors", "dry", "vegetable", "can", 1, 10],
+    ["tomatoes", "seniors", "dry", "vegetable", "can", 1, 10],
+    ["potatoes", "seniors", "dry", "vegetable", "can", 1, 10],
+    ["beets", "seniors", "dry", "vegetable", "can", 1, 10],
+    ["apple sauce", "seniors", "dry", "fruit", "can", 1, 10]
+]

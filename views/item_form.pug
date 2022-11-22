@@ -6,7 +6,7 @@ block content
      
       h2= name
 
-      form(action="/items",  method="POST" style="form-style")
+      form(action="/items",  method="POST" style="form-style" data-test-id="itemForm")
 
            ul.form-style
                li
@@ -47,7 +47,7 @@ block content
 
                li.button-group
                   button(type="submit") Submit
-                  button(type="button" onclick=`window.location.href="http://${hostname}:8080/reports/items"`) Cancel
+                  button(type="button" data-test-id="cancelAddItem" onclick=`window.location.href="http://${hostname}:8080/reports/items"`) Cancel
 
                .error 
                   each message in messages

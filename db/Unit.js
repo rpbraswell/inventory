@@ -21,7 +21,7 @@ class Unit {
       return Promise.resolve('success: 1 unit inserted');
    }
 
-   static getUnits( /*resultHandler*/ ) {
+   static getUnits() {
       let sql = 'select id,unit from units order by unit';
       return pool.query( {rowsAsArray: true,  sql: sql } );
    }

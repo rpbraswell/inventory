@@ -1,0 +1,5 @@
+{
+    "baseURL": "http://localhost:8080/",
+    "pageTitle": "The Mission Warehouse",
+    "launchOptions": { "headless": false }
+}

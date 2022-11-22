@@ -5,7 +5,7 @@ block content
   .form-div
 
       h2 Transfer
-      p(class="shipping") From: #{item.itemType} #{item.itemClass} #{item.name} 
+      p(class="shipping" data-test-id="transferItemName") From: #{item.itemType} #{item.itemClass} #{item.name} 
       p(class="shipping") On hand: #{item.qty}
       p(class="shipping") Package Qty: #{item.pkgQty}
 
