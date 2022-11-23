@@ -1,14 +1,14 @@
-const pool   = require('../db/db.js');
-const setup = require('./setup.js');
+import pool from '../db/db.js'
+import setup from './setup.js'
 
-const itemsReport = require('../lib/reports/itemsReport.js');
-const needToOrder = require('../lib/reports/needToOrder.js');
-const receivingReport = require('../lib/reports/receivingReport.js');
-const shippingReport = require('../lib/reports/shippingReport.js');
-const transferReport = require('../lib/reports/transferReport.js');
+import itemsReport from '../lib/reports/itemsReport.js'
+import needToOrder from '../lib/reports/needToOrder.js'
+import receivingReport from '../lib/reports/receivingReport.js'
+import shippingReport from '../lib/reports/shippingReport.js'
+import transferReport from '../lib/reports/transferReport.js'
 
-const reportFile = require('../lib/utils/reportFile.js')
-const fs = require('fs');
+import reportFile from '../lib/utils/reportFile.js'
+import fs from 'fs'
 const fsPromises = fs.promises;
 
 let connectionsAcquired = 0;
@@ -173,6 +173,7 @@ test('receivingReport.csv returns a file', async () => {
 
 test('monthly shipping report', async() => {
   expect.assertions(13)
+  console.log(setup.items)
   let id = setup.items[0].id;
   let report = await itemsReport.itemShipments(id);
   await expect(report.length).toEqual(4);

@@ -1,5 +1,5 @@
-const Category = require('../db/Category.js');
-const pool = require('../db/db.js');
+import Category from '../db/Category.js'
+import pool from '../db/db.js'
 
 let connectionsAcquired = 0;
 let connectionsReleased = 0;

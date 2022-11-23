@@ -1,5 +1,5 @@
 
-const pool = require("./db");
+import pool from "./db.js";
 
 class Receiving {
 
@@ -22,5 +22,4 @@ class Receiving {
 
 }
 
-module.exports = Receiving;
-
+export default Receiving;

@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var Item = require('../db/Item');
-var Category = require('../db/Category');
-var Unit = require('../db/Unit');
+import express from 'express'
+const router = express.Router();
+import Item from '../db/Item.js'
+import Category from '../db/Category.js'
+import Unit from '../db/Unit.js'
 
 router.get('/add', (req, res, next) => {
     let categoriesPromise = Category.getCategories();
@@ -88,4 +88,4 @@ router.post('/', (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

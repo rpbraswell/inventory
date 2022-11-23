@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var Unit = require('../db/Unit');
+import express from 'express'
+const router = express.Router();
+import Unit from '../db/Unit.js'
 
 /* GET units listing. */
 router.get('/', async function(req, res, next) {
@@ -26,4 +26,4 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

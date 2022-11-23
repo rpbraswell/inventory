@@ -1,13 +1,11 @@
 
-const puppeteer = require('puppeteer');
-const ItemPageModel = require('./pom/ItemPageModel.js');
-const config = require('./config.json');
-const setup = require('./setup.js');
-const pool = require('../db/db.js');
-const Item = require('../db/Item.js');
+import puppeteer from 'puppeteer'
+import ItemPageModel from './pom/ItemPageModel.js'
+import config from './config.json'
+import setup from './setup.js'
+import pool from '../db/db.js'
+import Item from '../db/Item.js'
 
-
-jest.setTimeout(30000);
 
 let browser;
 let page;
@@ -576,10 +574,11 @@ test('can cancel delete', async () => {
 
     await expect(rows.length).toEqual(nbrRows)
 
-    appleSause = await findRowWithName("apple sauce", rows)
+    appleSauce = await findRowWithName("apple sauce", rows)
 
     await expect(appleSauce).not.toBeNull()
 
     await expect(await appleSauce.$eval('td:nth-child(2)', node => node.innerText)).toMatch("grocery")
+
 
 })

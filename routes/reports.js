@@ -1,13 +1,13 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express'
+const router = express.Router();
 
-const reportFile = require('../lib/utils/reportFile.js');
-const needToOrder = require('../lib/reports/needToOrder.js');
-const shippingReport = require('../lib/reports/shippingReport');
-const receivingReport = require('../lib/reports/receivingReport');
-const transferReport = require('../lib/reports/transferReport.js');
-const itemsReport = require('../lib/reports/itemsReport.js');
-const Item = require('../db/Item.js');
+import reportFile from '../lib/utils/reportFile.js'
+import needToOrder from'../lib/reports/needToOrder.js'
+import shippingReport from'../lib/reports/shippingReport.js'
+import receivingReport from'../lib/reports/receivingReport.js'
+import transferReport from'../lib/reports/transferReport.js'
+import itemsReport from'../lib/reports/itemsReport.js'
+import Item from'../db/Item.js'
 
 let filterClass = 'all';
 
@@ -209,4 +209,4 @@ router.get('/itemsCSV', async (req, res, next) => {
     }
  });
  
-module.exports = router
+ export default router;

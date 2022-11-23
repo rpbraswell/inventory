@@ -1,0 +1,7 @@
+{
+    "transform": {},
+    "verbose": true,
+    "testMatch": [ "**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)" ],
+    "maxConcurrency": 1,
+    "testEnvironment": "jest-environment-node"
+}

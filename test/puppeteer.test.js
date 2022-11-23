@@ -1,11 +1,9 @@
-const express_flash_notification = require('express-flash-notification');
-const puppeteer = require('puppeteer');
-const HomePageModel = require('./pom/HomePageModel.js');
-const config = require('./config.json');
-const setup = require('./setup.js');
-const pool = require('../db/db.js')
 
-jest.setTimeout(30000);
+import puppeteer from 'puppeteer'
+import HomePageModel from './pom/HomePageModel.js'
+import config from './config.json'
+import setup from './setup.js'
+import pool from '../db/db.js'
 
 let browser;
 let page;
@@ -182,61 +180,5 @@ test('Need to Order button works', async () => {
     await expect(await hr.$eval('th:nth-child(3)', node => node.innerText)).toEqual("Type")
     await expect(await hr.$eval('th:nth-child(4)', node => node.innerText)).toEqual("On Hand")
     await expect(await hr.$eval('th:nth-child(5)', node => node.innerText)).toEqual("Monthly Usage")    
-})
-
-test('categories report', async () => {
-
-})
-
-test('units report', async () => {
-
-})
-
-test('receiving report', async () => {
-
-})
-
-test('shipping report', async () => {
-
-})
-
-test('transfer report', async () => {
-
-})
-
-test('need to order report', async () => {
-
-})
-
-test('add item', async() => {
-
-})
-
-test('delete item', async () => {
-
-})
-
-test('update item', async () => {
-
-})
-
-test('ship item', async () => {
-
-})
-
-test('receive item', async () => {
-
-})
-
-test('transfer item', async () => {
-
-})
-
-test('add category', async () => {
-
-})
-
-test('add unit', async () => {
-
 })
 

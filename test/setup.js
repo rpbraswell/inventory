@@ -1,14 +1,10 @@
-const pool = require ('../db/db.js');
-const Item   = require('../db/Item.js');
-const Category = require('../db/Category.js');
-const Unit     = require('../db/Unit.js');
-const fs = require('fs');
+import pool from '../db/db.js'
+import Item  from '../db/Item.js'
+import Category from '../db/Category.js'
+import Unit from '../db/Unit.js'
+import fs from 'fs'
 const fsPromises = fs.promises;
-/*
-const Shipping = require('../db/Shipping.js');
-const Receiving = require('../db/Receiving.js');
-const Transfer = require('../db/Transfer.js');
-*/
+
 
 let categories;
 let units;
@@ -49,7 +45,7 @@ function getDates(n) {
           year--;
        }
     }
-    module.exports.dates = dates;
+    setup.dates = dates;
     return dates;
 }
 
@@ -66,7 +62,7 @@ async function loadData() {
     await pool.batch('insert into items (name,itemClass,itemType,category,unit,pkgQty,qty) values (?,?,?,?,?,?,?)',_items);
     let result = await pool.query({rowsAsArray: false, sql: 'select * from items'});
     items = result.map( (i) => { return new Item(i) } );
-    module.exports.items = items;
+    setup.items = items;
     let dates = getDates(4);
     for(let item of items) {
         await pool.batch('insert into shipping (itemId,qty, shippedAt) values (?,?,?)', [
@@ -130,14 +126,14 @@ async function setup(options) {
     units = _units;
     itemClassValues = _classValues;
     itemTypeValues = _typeValues;
-    module.exports.categories = categories;
-    module.exports.units = units;
-    module.exports.itemClassValues = itemClassValues;
-    module.exports.itemTypeValues = itemTypeValues;
+    categories = categories;
+    units = units;
+    itemClassValues = itemClassValues;
+    itemTypeValues = itemTypeValues;
     await initializeDatabase(options.db);
 }
 
 
-module.exports = setup;
-module.exports.getIdForCategory = getIdForCategory;
-module.exports.getIdForUnit = getIdForUnit;
+export default setup;
+setup.getIdForCategory = getIdForCategory;
+setup.getIdForUnit = getIdForUnit;

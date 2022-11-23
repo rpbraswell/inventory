@@ -1,4 +1,4 @@
-let pool = require("./db.js");
+import pool from "./db.js";
 
 class Unit {
 
@@ -28,5 +28,4 @@ class Unit {
 
 }
 
-module.exports = Unit;
-
+export default Unit;

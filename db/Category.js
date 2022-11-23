@@ -1,4 +1,4 @@
-let pool = require("./db.js");
+import pool from "./db.js";
 
 class Category {
 
@@ -26,5 +26,4 @@ class Category {
     }
 }
 
-module.exports = Category;
-
+export default Category;

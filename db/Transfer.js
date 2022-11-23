@@ -1,4 +1,4 @@
-const pool = require("./db");
+import pool from "./db.js";
 
 class Transfer {
 
@@ -26,4 +26,4 @@ class Transfer {
     }    
 }
 
-module.exports = Transfer;
+export default Transfer;

@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var Item = require('../db/Item');
+import express from 'express'
+const router = express.Router();
+import Item from '../db/Item.js'
 
 router.get('/', (req, res, next) => {
      let id = Number(req.query.id);
@@ -29,4 +29,4 @@ router.get('/', (req, res, next) => {
      }
 })
 
-module.exports = router;
+export default router;

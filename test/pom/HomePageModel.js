@@ -14,5 +14,4 @@ class HomePageModel {
     }
 }
 
-
-module.exports = HomePageModel;
+export default HomePageModel;

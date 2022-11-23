@@ -1,8 +1,10 @@
-const Unit = require('../db/Unit.js');
-const pool = require('../db/db.js');
+import Unit from '../db/Unit.js'
+import pool from '../db/db.js'
 
 let connectionsAcquired = 0;
 let connectionsReleased = 0;
+
+
 
 beforeAll( async () => {
   pool.on('acquire', (_) => {
@@ -16,6 +18,7 @@ beforeAll( async () => {
 afterAll(() => {
    return pool.end();
 });
+
 
 test('getUnits', async () => {
     expect.assertions(3);

@@ -1,8 +1,8 @@
-let pool = require("./db.js");
+import pool from "./db.js";
 
-const Shipping = require('./Shipping.js');
-const Receiving = require('./Receiving.js');
-const Transfer = require('./Transfer.js');
+import Shipping from './Shipping.js';
+import Receiving from './Receiving.js';
+import Transfer from './Transfer.js';
 
 class Item {
 
@@ -240,6 +240,4 @@ class Item {
    
 }
 
-
-
-module.exports = Item;
+export default Item;

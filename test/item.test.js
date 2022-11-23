@@ -1,17 +1,11 @@
-const Item   = require('../db/Item.js');
-const Category = require('../db/Category.js');
-const Unit     = require('../db/Unit.js');
-const Shipping = require('../db/Shipping.js');
-const Receiving = require('../db/Receiving.js');
-const Transfer = require('../db/Transfer.js');
-const pool   = require('../db/db.js');
+import Item  from '../db/Item.js'
+import Shipping from '../db/Shipping.js'
+import Receiving from '../db/Receiving.js'
+import Transfer from '../db/Transfer.js'
+import pool  from '../db/db.js'
 
-const itemsReport = require('../lib/reports/itemsReport.js');
-const reportFile = require('../lib/utils/reportFile.js')
-const fs = require('fs');
-const { shipItem } = require('../db/Shipping.js');
-const { assert } = require('console');
-const setup = require('./setup.js');
+import fs from 'fs'
+import  setup from './setup.js'
 const fsPromises = fs.promises;
 
 let connectionsAcquired = 0;

@@ -1,5 +1,4 @@
-
-const pool = require("./db");
+import pool from "./db.js";
 
 class Shipping {
 
@@ -22,5 +21,4 @@ class Shipping {
 
 }
 
-module.exports = Shipping;
-
+export default Shipping;

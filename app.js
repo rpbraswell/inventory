@@ -1,26 +1,25 @@
-var createError  = require('http-errors');
-var express      = require('express');
-var path         = require('path');
-var cookieParser = require('cookie-parser');
-var logger       = require('morgan');
+import createError  from 'http-errors'
+import express      from 'express'
+import path         from 'path'
+import cookieParser from 'cookie-parser'
+import logger       from 'morgan'
+import { fileURLToPath } from 'url'
 
-var indexRouter   = require('./routes/index');
-var itemsRouter   = require('./routes/items');
-var receiveRouter = require('./routes/receive');
-var shipRouter    = require('./routes/ship');
-var unitsRouter   = require('./routes/units');
-var categoriesRouter   = require('./routes/categories');
-var transferRouter   = require('./routes/transfer');
-var reportsRouter    = require('./routes/reports.js');
-
-
-var app = express();
+import indexRouter   from './routes/index.js'
+import itemsRouter   from './routes/items.js'
+import receiveRouter from './routes/receive.js'
+import shipRouter    from './routes/ship.js'
+import unitsRouter   from './routes/units.js'
+import categoriesRouter   from './routes/categories.js'
+import transferRouter   from './routes/transfer.js'
+import reportsRouter    from './routes/reports.js'
 
 
-Item = require("./db/Item");
-Receiving = require("./db/Receiving");
-Shipping = require("./db/Shipping");
+const app = express();
 
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -58,4 +57,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+export default app;

@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var Category = require('../db/Category');
+import express from'express'
+const router = express.Router()
+import Category from '../db/Category.js'
 
 
 /* GET categories listing. */
@@ -12,7 +12,6 @@ router.get('/', async function(req, res, next) {
           res.render('error', {message: 'error getting categories', error: err, hostname: req.hostname});
      }
 });
-
 
 
 router.get('/add', (req, res, next) => {
@@ -30,4 +29,4 @@ router.post('/', async (req, res, next) => {
 
 });
 
-module.exports = router;
+export default router;

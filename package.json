@@ -2,9 +2,10 @@
   "name": "inventory",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "node ./bin/www",
-    "test": "jest --runInBand --verbose"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

@@ -1,4 +1,4 @@
-const Item = require('../../db/Item.js')
+import Item from '../../db/Item.js'
 
 class ItemPageModel {
     constructor(page, config) {
@@ -57,4 +57,4 @@ class ItemPageModel {
 }
 
 
-module.exports = ItemPageModel;
+export default ItemPageModel;
